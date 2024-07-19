@@ -107,10 +107,32 @@ def sponsor_dash(sponsor_id):
     if sponsor:
         campaigns = sponsor.campaign 
         print(f"Campaigns for sponsor {sponsor.id}: {campaigns}") #for debugging
-        return render_template("sponsor_dash.html", s_name = sponsor, campaigns = campaigns )
     else:
         campaigns = []        
-    # return render_template("sponsor_dash.html", s_name = sponsor, campigns = campaigns )
+    return render_template("sponsor_dash.html", s_name = sponsor, campaigns = campaigns )
+
+
+
+
+#allow aponsor to delete campaign
+@app.route('/sponsor/<int:sponsor_id>/campaign/<int:campaign_id>', methods=['POST'])
+def delete_campaign(sponsor_id, campaign_id):
+    
+    sponsor = Sponsor.query.get(sponsor_id)
+    if not sponsor:
+        return 'error - Sponsor not found'
+    
+    
+    campaign = Campaign.query.filter_by(camp_id=campaign_id, sponsor_id=sponsor_id).first()
+    if not campaign:
+        return 'error -- Campaign not found or does not belong to the sponsor', 
+    else: 
+        db.session.delete(campaign)
+        db.session.commit()
+    return redirect(f'/sponsor/{sponsor.id}')
+    return render_template("sponsor_dash.html", s_name = sponsor, campaigns = sponsor.campaign )
+
+
 
 #create new campaign on clicking the button
 @app.route('/new_campaign/<int:sponsor_id>', methods = ['GET','POST'])
