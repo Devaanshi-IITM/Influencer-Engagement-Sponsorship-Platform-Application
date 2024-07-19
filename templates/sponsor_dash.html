@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <title>Sponsor Dashboard</title>
+    <link rel="stylesheet" href="../static/dashboard.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+</head>
+<body>
+    <div id = "main">
+        <div id = "canvas">
+            <div id = "dashboard-body">
+            <!-- nav bar for Sponsor dashboard -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+              <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                      <button type="button" class="btn btn-secondary" style="margin-right: 10px; background-color: coral;" onclick="location.href='/create_ad.html'">Ad Request</button>
+                    </li>
+                    <form class="d-flex" style ="margin-right: 10px;" action="/search">
+                        <input class="form-control me-2" type="search" placeholder="Search Influencer" aria-label="Search" name = "search_word">
+                        <button class="btn btn-secondary" type="submit" style="background-color: coral;">Search</button>
+                      </form>
+                  </ul>
+                  <form class="d-flex">
+                    <span style="margin-right: 10px; font-size: x-large;">Welcome {{s_name.user_name}} !</span>
+                    <button class="btn btn-outline-danger" type="button" onclick="location.href= '/userlogin'" >Logout</button>
+                </form>
+                
+                </div>
+              </div>
+            </nav><br>
+            <h3><i>My Ongoing Campaigns</i></h3>
+            <br>
+
+        <!--display current campaigns-->
+        <div class="container">
+            <div class="row">
+                {% if campaigns %}
+                    {% for campaign in campaigns %}
+                    <div class="col">
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-body">
+                                <h5 class="card-title">{{campaign.camp_name }}</h5>
+                                <p class="card-text">Category: {{ campaign.category }}</p>
+                                <p class="card-text">Begins: {{campaign.s_date}}</p>
+                                <p class="card-text">Ends: {{campaign.e_date}}</p>
+                                <p class="card-text">Budget: {{campaign.budget}}</p>
+                                <p class="card-text">Visibility: {{campaign.visibility}}</p>
+                                <p class="card-text">Description: {{campaign.description}}</p>
+                                <div>
+                                    <button type="button" class="btn btn-secondary" style="background-color: rgb(109, 4, 109);">Edit</button>
+                                    <button type="button" class="btn btn-secondary" style="background-color: rgb(109, 4, 109);">Delete</button>  
+                                </div>   
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No campaigns available.</p>
+                {% endif %}
+            </div>
+        </div>        
+
+        <!--create new camapign button-->
+            <div style="text-align: center;">
+                <button type="submit" class="btn btn-secondary" style="background-color: coral;" onclick="location.href='/new_campaign/{{ s_name.id }}'">Create Campaign</button>
+            </div>
+            
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

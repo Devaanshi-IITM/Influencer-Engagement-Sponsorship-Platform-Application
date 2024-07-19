@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <title>User Login</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+</head>
+<body>
+    <div id = "main">
+        <div id = "canvas">
+            <div id = "form-body">
+                <h1><pre>    Login</pre></h1>
+
+                <form action ="/userlogin" method = "post">
+                    <div class="form-group">
+                        <label for="role">Select Role</label>
+                        <select class="form-control" id="role" required>
+                            <option value="admin">admin</option>
+                            <option value="influencer">influencer</option>
+                            <option value="sponsor">sponsor</option>
+                        </select>
+                    </div>
+                    <br>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" placeholder="Shell123" name = "u_name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="pwd" class="form-label">Password</label>
+                        <input type="Password" class="form-control" id="pwd" name = "pwd" >
+                    </div>
+                    <div style="text-align: center;">
+                    <input type = "submit" class=" btn btn-primary" value = "Login">
+                    </div>
+                </form>
+                    <div style="text-align: center;">
+                    <p>Not an existing user? <a href = "/register">Register</a></p>
+                    </div>
+                    <br>
+                    {{msg}}
+                
+                
+                  
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

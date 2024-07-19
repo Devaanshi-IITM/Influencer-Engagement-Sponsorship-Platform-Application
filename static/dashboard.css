@@ -1,0 +1,50 @@
+/* dashboard styling, general styling */
+*{
+    margin: 0px;
+}
+#main, #canvas{
+    border: 2px solid black;
+}
+#canvas{
+    margin:auto;
+    width: 90%;
+    height: auto;
+}
+#dashboard-body{
+    margin-top: 10px;
+    padding: 10px;
+}
+.button-container {
+    display: flex;
+    gap: 10px;
+}
+.custom-search-bar {
+    margin-left: 700px;
+    
+}
+
+
+
+/*campaign management styling*/
+#campaign-section{
+    border: 2px solid rgb(184, 17, 190);
+    width: 488px;
+    height: auto;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 5%;
+    padding: 15px;
+}
+#delete-campaign-section{
+    border: 2px solid rgb(143, 96, 201);
+    width: 250px;
+    height: 270px;
+    margin: auto;
+    margin-top: 150px;
+    border-radius: 5%;
+    padding: 15px;
+
+}
+
+
