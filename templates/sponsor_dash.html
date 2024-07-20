@@ -66,6 +66,7 @@
                                     <p class="card-text">Description: {{campaign.description}}</p>
                                     <div>
                                         <button type="button" class="btn btn-secondary"
+                                            onclick="location.href='/sponsoredit/{{ s_name.id }}/campaign/{{campaign.camp_id}}'"
                                             style="background-color: rgb(109, 4, 109);">Edit</button>
                                         <form action="/sponsor/{{ s_name.id }}/campaign/{{campaign.camp_id}}"
                                             method="POST"
@@ -74,6 +75,10 @@
                                             <button type="submit" class="btn btn-secondary"
                                                 style="background-color: rgb(109, 4, 109);">Delete</button>
                                         </form>
+                                        <button type="button" class="btn btn-secondary"
+                                            style="margin-right: 10px; background-color: rgb(109, 4, 109);"
+                                            onclick="location.href='/sponsorad/{{ s_name.id }}/campaign/{{campaign.camp_id}}'">Ad
+                                            Request</button>
                                     </div>
                                 </div>
                             </div>

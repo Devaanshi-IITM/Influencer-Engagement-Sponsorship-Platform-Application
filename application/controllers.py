@@ -132,6 +132,32 @@ def delete_campaign(sponsor_id, campaign_id):
     return redirect(f'/sponsor/{sponsor.id}')
     return render_template("sponsor_dash.html", s_name = sponsor, campaigns = sponsor.campaign )
 
+#allow sponsor to edit campaign
+@app.route('/sponsoredit/<int:sponsor_id>/campaign/<int:campaign_id>', methods=['GET','POST'])
+def edit_campaign(sponsor_id, campaign_id):
+    sponsor = Sponsor.query.get(sponsor_id)
+    if not sponsor:
+        return 'error - Sponsor not found'
+    campaign = Campaign.query.filter_by(camp_id=campaign_id, sponsor_id=sponsor_id).first()
+    if not campaign:
+        return 'error -- Campaign not found or does not belong to the sponsor', 
+    else: 
+        if request.method == 'GET':
+            return render_template('new_camp.html', s_name = sponsor, campaign_id = campaign_id, shouldUpdate= True )
+        
+        if request.method == 'POST':
+            camp_name = request.form.get("camp_name")
+            category = request.form.get("category")
+            s_date = request.form.get("s_date")
+            e_date = request.form.get("e_date")
+            budget = request.form.get("budget")
+            visibility = request.form.get("visibility")
+            description = request.form.get("describe")
+        #my_camp = Campaign(camp_name = camp_name, sponsor_id = sponsor.id, camp_id = campaign_id, category = category, s_date = s_date, e_date = e_date, budget = budget, visibility = visibility, description = description)
+            #db.session.add(my_camp)
+            db.session.commit()
+            return redirect(f'/sponsor/{sponsor.id}')
+        return render_template('new_camp.html', s_name = sponsor)
 
 
 #create new campaign on clicking the button
@@ -151,6 +177,26 @@ def new_campaign(sponsor_id):
         db.session.commit()
         return redirect(f'/sponsor/{sponsor.id}')
     return render_template('new_camp.html', s_name = sponsor)
+
+# allow sponsor to create an ad_request
+@app.route('/sponsorad/<int:sponsor_id>/campaign/<int:campaign_id>', methods = ['GET','POST'])
+def create_adRequest(sponsor_id, campaign_id):
+    sponsor = Sponsor.query.get(sponsor_id)
+    if request.method == 'GET':
+        return render_template('create_ad.html', s_name = sponsor, campaign_id = campaign_id )
+    campaign = Campaign.query.filter_by(camp_id=campaign_id, sponsor_id = sponsor_id)
+
+    if request.method == 'POST':
+        niche = request.form.get("niche")
+        requirements = request.form.get("requirements")
+        payment_amt = request.form.get("payment_amt")
+        status = request.form.get("status")
+        my_req = Ad_Request(influencer_id = 1, campaign_id= campaign_id, niche = niche, requirements = requirements, payment_amt = payment_amt, status =status)
+        db.session.add(my_req)
+        db.session.commit()
+        return redirect(f'/sponsor/{sponsor.id}')
+    return render_template('create_ad.html', s_name = sponsor)
+
 
 
 #search functionality for sponsor

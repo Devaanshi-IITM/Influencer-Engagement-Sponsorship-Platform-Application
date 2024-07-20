@@ -1,52 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    
+
     <title>Ad Request Mgmt</title>
     <link rel="stylesheet" href="../static/dashboard.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
 </head>
+
 <body>
-    <div id = "main">
-        <div id = "canvas">
-            <div id = "campaign-section">
-                <form > <!-- form action-->
+    <div id="main">
+        <div id="canvas">
+            <div id="campaign-section">
+                <form action="/sponsorad/{{ s_name.id }}/campaign/{{campaign_id}}" method="post"> <!-- form action-->
 
                     <h2 style="text-align: center;">Create/Edit Ad Request</h2> <br>
-                    
+
                     <div class="form-group">
-                        <label for="niche" >Niche</label>
-                        <input type="text" class="form-control" id="camp_name" name = "niche"> <!--name attribute takes data to backend-->
+                        <label for="niche">Niche</label>
+                        <input type="text" class="form-control" id="camp_name" name="niche">
+                        <!--name attribute takes data to backend-->
                     </div><br>
 
                     <div class="form-group">
                         <label for="requirement">Requiremets</label>
-                        <textarea class="form-control" id="adRequirement" rows="2" name = "requirement"></textarea>
+                        <textarea class="form-control" id="adRequirement" rows="2" name="requirements"></textarea>
                     </div><br>
-                    
+
                     <div class="form-group">
                         <label for="payment">Payment Amount</label>
-                        <input type="text" class="form-control" id="s_date" name = "payment_amt">
+                        <input type="text" class="form-control" id="s_date" name="payment_amt">
                     </div><br>
-                    
+
                     <div class="form-group">
                         <label for="status">Status</label>
-                        <input type="text" class="form-control" id="e_date" name = "status">
+                        <input type="text" class="form-control" id="e_date" name="status">
                     </div><br>
-                            
+
                     <br>
                     <div style="text-align: center;">
-                        <input type="submit" class="btn btn-primary mb-3" value = "Submit">
+                        <input type="submit" class="btn btn-primary mb-3" value="Submit">
                     </div>
                 </form>
-                
-                
-                
-                  
+
+
+
+
             </div>
         </div>
     </div>
-    
+
 </body>
+
 </html>
