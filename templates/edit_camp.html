@@ -14,39 +14,39 @@
     <div id="main">
         <div id="canvas">
             <div id="campaign-section">
-                <form action='/new_campaign/{{s_name.id}}'  method="post">
+                <form action= '/sponsor/edit/{{ s_name.id }}/campaign/{{campaign.camp_id}}' method="post"> <!-- form action-->
 
-                    <h2 style="text-align: center;">Create Campaign</h2>
+                    <h2 style="text-align: center;">My Campaign</h2>
 
                     <div class="form-group">
                         <label for="campaignName">Name:</label>
-                        <input type="text" class="form-control" id="camp_name" name="camp_name">
+                        <input type="text" class="form-control" id="camp_name" name="camp_name" value="{{ campaign.camp_name }}">
                         <!--name attribute takes data to backend-->
                     </div><br>
 
                     <div class="form-group">
                         <label for="category">Category:</label>
-                        <input type="text" class="form-control" id="category" name="category">
+                        <input type="text" class="form-control" id="category" name="category" value="{{ campaign.category }}">
                     </div><br>
 
                     <div class="form-group">
                         <label for="startDate">Start Date</label>
-                        <input type="date" class="form-control" id="s_date" name="s_date">
+                        <input type="date" class="form-control" id="s_date" name="s_date" value="{{ campaign.s_date }}">
                     </div><br>
 
                     <div class="form-group">
                         <label for="endDate">End Date</label>
-                        <input type="date" class="form-control" id="e_date" name="e_date">
+                        <input type="date" class="form-control" id="e_date" name="e_date" value="{{ campaign.e_date }}">
                     </div><br>
 
                     <div class="form-group">
                         <label for="budget">Budget</label>
-                        <input type="number" class="form-control" id="budget" name="budget">
+                        <input type="number" class="form-control" id="budget" name="budget" value="{{ campaign.budget }}">
                     </div><br>
 
                     <div class="form-group">
                         <label for="visibility">Visibility</label>
-                        <select class="form-control" id="visibility" name="visibility">
+                        <select class="form-control" id="visibility" name="visibility" value="{{ campaign.visibility }}">
                             <option value="public">Public</option>
                             <option value="private">Private</option>
                         </select>
@@ -54,14 +54,12 @@
 
                     <div class="form-group">
                         <label for="campaignDescription">Description</label>
-                        <textarea class="form-control" id="campaignDescription" rows="2" name="describe"></textarea>
+                        <textarea class="form-control" id="campaignDescription" rows="2" name="describe" value="{{ campaign.describe }}"></textarea>
                     </div>
                     <br>
                     <div style="text-align: center;">
                         <!--<button type="submit" class="btn btn-primary" >Create Campaign</button>-->
-
-
-                        <input type="submit" class="btn btn-primary mb-3" value="Create">
+                        <input type="submit" class="btn btn-primary mb-3" value="Save Changes">
 
                     </div>
                 </form>

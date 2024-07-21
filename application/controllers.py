@@ -19,22 +19,21 @@ def user_login():
         admin = Admin.query.filter_by(user_name = u_name).first()
         if influencer:
             if influencer.password == pwd:
-                return render_template("Influencer_dash.html", name = influencer.user_name)
-            else:
-                return render_template('login.html', msg= "incorrect paasword")
+                if influencer.role == "influencer":
+                    print(influencer)
+            return redirect(f'/influencer/{influencer.id}')
+        
         elif sponsor:
             if sponsor.password == pwd:
-                return redirect(f'/sponsor/{sponsor.id}')
-                #return render_template("sponsor_dash.html", name = sponsor.user_name)
-            else:
-                return render_template('login.html', msg= "incorrect paasword")
+                if sponsor.role == "sponsor":
+                    return redirect(f'/sponsor/{sponsor.id}')
         elif admin:
             if admin.password == pwd:
-                return render_template("admin_dash.html", name = admin.user_name)
-            else:
-                return render_template('login.html', msg= "incorrect paasword")
+                if admin.role == "admin":
+                    return render_template("admin_dash.html", name=admin.user_name)
         else:
-            return render_template('login.html', msg= "user does not exist!!")       
+            return render_template('login.html', msg="Incorrect username or password")
+
     return render_template('login.html')
 
 
@@ -100,6 +99,11 @@ def sponsor_register():
             return redirect('/userlogin')
     return render_template('register_sponsor.html')
 
+# fetch sponsor info
+def fetch_sponsor_info(id):
+    sponsor_info = Sponsor.query.filter_by(id=id).first()
+    return sponsor_info
+
 # end point for sponsor (managing camapigns etc.)
 @app.route('/sponsor/<int:sponsor_id>', methods=['GET', 'POST'])
 def sponsor_dash(sponsor_id):
@@ -112,55 +116,41 @@ def sponsor_dash(sponsor_id):
     return render_template("sponsor_dash.html", s_name = sponsor, campaigns = campaigns )
 
 
-
-
-#allow aponsor to delete campaign
+# allow aponsor to delete campaign
 @app.route('/sponsor/<int:sponsor_id>/campaign/<int:campaign_id>', methods=['POST'])
 def delete_campaign(sponsor_id, campaign_id):
     
     sponsor = Sponsor.query.get(sponsor_id)
     if not sponsor:
         return 'error - Sponsor not found'
-    
-    
+     
     campaign = Campaign.query.filter_by(camp_id=campaign_id, sponsor_id=sponsor_id).first()
     if not campaign:
-        return 'error -- Campaign not found or does not belong to the sponsor', 
+        return 'error - Campaign not found or does not belong to the sponsor', 
     else: 
         db.session.delete(campaign)
         db.session.commit()
     return redirect(f'/sponsor/{sponsor.id}')
-    return render_template("sponsor_dash.html", s_name = sponsor, campaigns = sponsor.campaign )
 
-#allow sponsor to edit campaign
-@app.route('/sponsoredit/<int:sponsor_id>/campaign/<int:campaign_id>', methods=['GET','POST'])
+# allow sponsor to edit campaign
+@app.route('/sponsor/edit/<int:sponsor_id>/campaign/<int:campaign_id>', methods=['GET','POST'])
 def edit_campaign(sponsor_id, campaign_id):
     sponsor = Sponsor.query.get(sponsor_id)
-    if not sponsor:
-        return 'error - Sponsor not found'
-    campaign = Campaign.query.filter_by(camp_id=campaign_id, sponsor_id=sponsor_id).first()
-    if not campaign:
-        return 'error -- Campaign not found or does not belong to the sponsor', 
-    else: 
-        if request.method == 'GET':
-            return render_template('new_camp.html', s_name = sponsor, campaign_id = campaign_id, shouldUpdate= True )
-        
-        if request.method == 'POST':
-            camp_name = request.form.get("camp_name")
-            category = request.form.get("category")
-            s_date = request.form.get("s_date")
-            e_date = request.form.get("e_date")
-            budget = request.form.get("budget")
-            visibility = request.form.get("visibility")
-            description = request.form.get("describe")
-        #my_camp = Campaign(camp_name = camp_name, sponsor_id = sponsor.id, camp_id = campaign_id, category = category, s_date = s_date, e_date = e_date, budget = budget, visibility = visibility, description = description)
-            #db.session.add(my_camp)
-            db.session.commit()
-            return redirect(f'/sponsor/{sponsor.id}')
-        return render_template('new_camp.html', s_name = sponsor)
+    campaign = Campaign.query.filter_by(sponsor_id=sponsor.id, camp_id=campaign_id)
+    if request.method == 'POST':
+        campaign.camp_name = request.form.get("camp_name")
+        campaign.category = request.form.get("category")
+        campaign.s_date = request.form.get("s_date")
+        campaign.e_date = request.form.get("e_date")
+        campaign.budget = request.form.get("budget")
+        campaign.visibility = request.form.get("visibility")
+        campaign.description = request.form.get("describe")
+        db.session.commit()
+        return redirect(f'/sponsor/{sponsor.id}')
+    return render_template('edit_camp.html', s_name = sponsor, campaign = campaign)
 
 
-#create new campaign on clicking the button
+# allows sponsor to create new campaign
 @app.route('/new_campaign/<int:sponsor_id>', methods = ['GET','POST'])
 def new_campaign(sponsor_id):
     sponsor = Sponsor.query.get(sponsor_id)
@@ -191,11 +181,19 @@ def create_adRequest(sponsor_id, campaign_id):
         requirements = request.form.get("requirements")
         payment_amt = request.form.get("payment_amt")
         status = request.form.get("status")
-        my_req = Ad_Request(influencer_id = 1, campaign_id= campaign_id, niche = niche, requirements = requirements, payment_amt = payment_amt, status =status)
-        db.session.add(my_req)
-        db.session.commit()
+        influencer = Influencer.query.filter_by(niche=niche).first()
+
+        if influencer:
+            my_req = AdRequest(influencer_id=influencer.id, campaign_id=campaign_id, niche=niche, requirements=requirements,payment_amt=payment_amt, status=status)
+            
+            db.session.add(my_req)
+            db.session.commit()
+            return redirect(f'/sponsor/{sponsor.id}')
+        else:
+            error_msg = "No influencer with the specified niche."       
+        
         return redirect(f'/sponsor/{sponsor.id}')
-    return render_template('create_ad.html', s_name = sponsor)
+    return render_template('create_ad.html', s_name = sponsor, error = error_msg)
 
 
 
@@ -208,6 +206,18 @@ def text_search():
     full_name = Influencer.query.filter(Influencer.full_search_name.like(search_word)).all()
     return render_template('srch_influencer.html',full_name = full_name)
 
+
+# end point for influencer dashboard
+'''@app.route('/influencer/<int:influencer_id>', methods=['GET', 'POST'])
+def influencer_dash(influencer_id):
+    influencer = Influencer.query.get(influencer_id)
+    if influencer:
+        ad_request = influencer.ad_request 
+        for idx, request in enumerate(ad_request):
+            print(f"Ad_Request {idx + 1}: {request}")
+    else:
+        ad_request = []        
+    return render_template("influencer_dash.html", influencer = influencer, ad_request = ad_request)'''
 
     
 

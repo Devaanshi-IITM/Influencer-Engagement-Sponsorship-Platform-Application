@@ -23,8 +23,6 @@
     
 }
 
-
-
 /*campaign management styling*/
 #campaign-section{
     border: 2px solid rgb(184, 17, 190);
@@ -47,4 +45,16 @@
 
 }
 
+/* sponsor dashboard, style buttons for edit, del, adreq */
+#button-container{
+    display: flex;
+    justify-content: flex-start;
+
+}
+#button-conatiner button{
+    margin-right: 10px;
+    background-color: rgb(109, 4, 109) !important;
+    color: white;
+
+}
 
