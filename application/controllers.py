@@ -40,25 +40,6 @@ def user_login():
 # for user register
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == "POST":
-        u_name = request.form.get("u_name")
-        pwd = request.form.get("pwd")
-        fullName = request.form.get("fullName")
-       
-        this_user = Admin.query.filter_by(user_name = u_name).first()
-        if this_user:
-            return "user already exists! as admin"
-            this_user = Influencer.query.filter_by(user_name = u_name).first()
-        if this_user:
-            return "user already exists! as influencer"
-            this_user = Sponsor.query.filter_by(user_name = u_name).first()
-        if this_user:
-            return "user already exists! as sponsor"
-        else:
-            new_user = Sponsor(user_name = u_name, password = pwd, fullName = fullName, type = "general", role="Sponsor")
-            db.session.add(new_user)
-            db.session.commit()
-            return redirect('/userlogin')
     return render_template('register.html')
 
 
@@ -110,7 +91,7 @@ def sponsor_dash(sponsor_id):
     sponsor = Sponsor.query.get(sponsor_id)
     if sponsor:
         campaigns = sponsor.campaign 
-        print(f"Campaigns for sponsor {sponsor.id}: {campaigns}") #for debugging
+        #print(f"Campaigns for sponsor {sponsor.id}: {campaigns}") #for debugging
     else:
         campaigns = []        
     return render_template("sponsor_dash.html", s_name = sponsor, campaigns = campaigns )
@@ -133,21 +114,28 @@ def delete_campaign(sponsor_id, campaign_id):
     return redirect(f'/sponsor/{sponsor.id}')
 
 # allow sponsor to edit campaign
-@app.route('/sponsor/edit/<int:sponsor_id>/campaign/<int:campaign_id>', methods=['GET','POST'])
+@app.route('/sponsor/edit/<int:sponsor_id>/campaign/<int:campaign_id>', methods = ['GET','POST'])
 def edit_campaign(sponsor_id, campaign_id):
     sponsor = Sponsor.query.get(sponsor_id)
-    campaign = Campaign.query.filter_by(sponsor_id=sponsor.id, camp_id=campaign_id)
+    if sponsor:
+        campaigns = sponsor.campaign
+        '''print(f"Campaigns for sponsor {sponsor.id}: {campaigns}")
+        for campaign in campaigns:
+            print(f"Campaign ID: {campaign.camp_id}, Name: {campaign.camp_name}")
+            '''
     if request.method == 'POST':
-        campaign.camp_name = request.form.get("camp_name")
-        campaign.category = request.form.get("category")
-        campaign.s_date = request.form.get("s_date")
-        campaign.e_date = request.form.get("e_date")
-        campaign.budget = request.form.get("budget")
-        campaign.visibility = request.form.get("visibility")
-        campaign.description = request.form.get("describe")
+        campaign = Campaign.query.get(campaign_id)
+        print(campaign)
+        campaign.camp_name = request.form.get["camp_name"]
+        campaign.category = request.form.get["category"]
+        campaign.s_date = request.form.get["s_date"]
+        campaign.e_date = request.form.get["e_date"]
+        campaign.budget = request.form.get["budget"]
+        campaign.visibility = request.form.get["visibility"]
+        campaign.description = request.form.get["describe"]
         db.session.commit()
         return redirect(f'/sponsor/{sponsor.id}')
-    return render_template('edit_camp.html', s_name = sponsor, campaign = campaign)
+    return render_template('edit_camp.html', s_name = sponsor, campaign = campaigns)
 
 
 # allows sponsor to create new campaign
@@ -181,10 +169,11 @@ def create_adRequest(sponsor_id, campaign_id):
         requirements = request.form.get("requirements")
         payment_amt = request.form.get("payment_amt")
         status = request.form.get("status")
+        end_date = request.form.get("end_date")
         influencer = Influencer.query.filter_by(niche=niche).first()
 
         if influencer:
-            my_req = AdRequest(influencer_id=influencer.id, campaign_id=campaign_id, niche=niche, requirements=requirements,payment_amt=payment_amt, status=status)
+            my_req = AdRequest(influencer_id=influencer.id, campaign_id=campaign_id, niche=niche, requirements=requirements,payment_amt=payment_amt, status=status, end_date = end_date)
             
             db.session.add(my_req)
             db.session.commit()
@@ -208,17 +197,24 @@ def text_search():
 
 
 # end point for influencer dashboard
-'''@app.route('/influencer/<int:influencer_id>', methods=['GET', 'POST'])
+@app.route('/influencer/<int:influencer_id>', methods=['GET', 'POST'])
 def influencer_dash(influencer_id):
     influencer = Influencer.query.get(influencer_id)
     if influencer:
-        ad_request = influencer.ad_request 
-        for idx, request in enumerate(ad_request):
-            print(f"Ad_Request {idx + 1}: {request}")
+        ad_requests = influencer.ad_requests  # Assuming this correctly fetches related ad requests
     else:
-        ad_request = []        
-    return render_template("influencer_dash.html", influencer = influencer, ad_request = ad_request)'''
+        ad_requests = []
 
+    return render_template("influencer_dash.html", influencer=influencer, ad_requests=ad_requests)
     
-
-
+# allow influencer to reject an ad_request
+'''@app.route('/influencer/<int:influencer_id>/ad_request/<int:ad_request_id>', methods=['POST'])
+def reject_adreq(influencer_id, ad_request_id):
+    influencer = Influencer.query.get(influencer_id)
+    ad_request = AdRequest.query.filterby(influencer_id = influencer.id, req_id = ad_request_id).first()
+    if request.method == 'post':
+        ad_request.status = "rejected"
+        db.session.commit()
+        return render_template("influencer_dash.html", influencer_id = influencer_id)
+    return render_template("influencer_dash.html", influencer = influencer)
+'''

@@ -16,27 +16,32 @@
             <div id="campaign-section">
                 <form action="/sponsorad/{{ s_name.id }}/campaign/{{campaign_id}}" method="post"> <!-- form action-->
 
-                    <h2 style="text-align: center;">Create/Edit Ad Request</h2> <br>
+                    <h2 style="text-align: center;">My Ad Request</h2> <br>
 
                     <div class="form-group">
                         <label for="niche">Niche</label>
-                        <input type="text" class="form-control" id="camp_name" name="niche">
+                        <input type="text" class="form-control" id="niche" name="niche">
                         <!--name attribute takes data to backend-->
                     </div><br>
 
                     <div class="form-group">
                         <label for="requirement">Requiremets</label>
-                        <textarea class="form-control" id="adRequirement" rows="2" name="requirements"></textarea>
+                        <textarea class="form-control" id="requirement" rows="2" name="requirements"></textarea>
                     </div><br>
 
                     <div class="form-group">
                         <label for="payment">Payment Amount</label>
-                        <input type="text" class="form-control" id="s_date" name="payment_amt">
+                        <input type="text" class="form-control" id="payment" name="payment_amt">
                     </div><br>
 
                     <div class="form-group">
                         <label for="status">Status</label>
-                        <input type="text" class="form-control" id="e_date" name="status">
+                        <input type="text" class="form-control" id="status" name="status">
+                    </div><br>
+
+                    <div class="form-group">
+                        <label for="end_date">End Date</label>
+                        <input type="date" class="form-control" id="end_date" name="end_date">
                     </div><br>
 
                     <br>

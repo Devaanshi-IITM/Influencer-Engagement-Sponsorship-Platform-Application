@@ -53,73 +53,93 @@
           </div>
         </div>
 
-        <!-- campaigns-->
-        <h5>My Campaigns</h5>
-        <div class="container mt-4">
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Campaign</th>
-                <th scope="col">Sponsor</th>
-                <th scope="col">Expires</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Shasha</td>
-                <td>5</td>
-                <td><button type="button" class="btn btn-secondary"
-                    style="margin-right: 10px; background-color: coral;">View</button>
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>Jada</td>
-                <td>8</td>
-                <td><button type="button" class="btn btn-secondary"
-                    style="margin-right: 10px; background-color: coral;">View</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
         <!--New Ad Request-->
         <h5>New Ad Requests</h5>
         <div class="container mt-4">
-          {% if ad_requests %}
-          <table class="table" style="text-align: center;">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Campaign</th>
-                <th scope="col">Requirements</th>
-                <th scope="col">Paymnet amount</th>
-                <th scope="col">Status</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                {% for req in ad_request %}
-                <th scope="row">{{loop.index}}</th>
-                <td>{{req.camapign}}</td>
-                <td>{{req.requirements}}</td>
-                <td>{{req.payment_amt}}</td>
-                <td>{{req.status}}</td>
-                <td><button type="button" class="btn btn-success" style="margin-right: 10px;">Accept</button>
-                  <button type="button" class="btn btn-danger" style="margin-right: 10px;">Reject</button>
-
-              </tr>
-              {% endfor %}
-            </tbody>
+            {% if ad_requests %}
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr style="text-align: center;">
+                        <th scope="col">S.No.</th>
+                        <th scope="col">Campaign</th>
+                        <th scope="col">Requirements</th>
+                        <th scope="col">Payment Amount</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">End_date</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody style="text-align: center;">
+                    {% for req in ad_requests %}
+                    <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{ req.campaign.camp_name }}</td>
+                        <td>{{ req.requirements }}</td>
+                        <td>{{ req.payment_amt }}</td>
+                        <td>{{ req.status }}</td>
+                        <td>{{ req.end_date }}</td>
+                        <td>
+                            <button type="button" class="btn btn-success" style="margin-right: 10px;">Accept</button>
+                        
+                            <form action="'/influencer{{inluencer.influencer_id}}/ad_request{{ad_request.req_id}}'" method="POST"
+                              onsubmit="return confirm('Are you sure you want to reject this ad_request?');">
+                              <input type="hidden" name="_method" value="REJECT">
+                              <button type="submit" class="btn btn-danger" >Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% if req.is_accepted %}
+                    <strong>Accepted</strong>
+                    {% else %}
+                    <strong>Pending</strong>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
             {% else %}
             <p>No ad requests found.</p>
             {% endif %}
-          </table>
         </div>
 
+      <!--Influencer's current or active campaigns-->
+      <h5>My Engagements</h5>
+      <div class="container mt-4">
+          {% if ad_requests %}
+          <table class="table table-bordered table-striped">
+              <thead>
+                  <tr style="text-align: center;">
+                      <th scope="col">S.No.</th>
+                      <th scope="col">Campaign</th>
+                      <th scope="col">To do</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Expires</th>
+                      
+                  </tr>
+              </thead>
+              <tbody style="text-align: center;">
+                  {% for req in ad_requests %}>
+                  {% if req.status == 'accepted' %}
+                  {% set is_accepted = true %}
+                  <tr>
+                      <th scope="row">{{ loop.index }}</th>
+                      <td>{{ req.campaign.camp_name }}</td>
+                      <td>{{ req.requirements }}</td>
+                      <td>active</td>   <!-- active status for accepted requests-->
+                      <td>{{ req.end_date }}</td>
+            
+                  </tr>
+                
+                  {% endif %}
+                  {% endfor %}
+              </tbody>
+          </table>
+          {% if not is_accepted %}
+          <p> No activity found</p>
+          {% endif %}
+          {% else %}
+          <p>No activity found. <p>
+          {% endif %}
+      </div>
 
 
 

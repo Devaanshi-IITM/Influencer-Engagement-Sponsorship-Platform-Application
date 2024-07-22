@@ -4,7 +4,7 @@ from application.database import db # so app.py should be able to take db object
 app = None
 
 def create_app():
-    app = Flask(__name__) # refers to current module, object of flask
+    app = Flask(__name__, static_folder='static') # refers to current module, object of flask
     app.debug = True
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///inspo.sqlite3" # insp -- > infuencer sponsor platform, its just name
     db.init_app(app) # app shuld be configured with db object.

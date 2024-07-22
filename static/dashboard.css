@@ -23,7 +23,7 @@
     
 }
 
-/*campaign management styling*/
+/*campaign management styling for sponsor --> new camp, edit camp etc.*/
 #campaign-section{
     border: 2px solid rgb(184, 17, 190);
     width: 488px;
@@ -33,16 +33,6 @@
     margin-bottom: 20px;
     border-radius: 5%;
     padding: 15px;
-}
-#delete-campaign-section{
-    border: 2px solid rgb(143, 96, 201);
-    width: 250px;
-    height: 270px;
-    margin: auto;
-    margin-top: 150px;
-    border-radius: 5%;
-    padding: 15px;
-
 }
 
 /* sponsor dashboard, style buttons for edit, del, adreq */
