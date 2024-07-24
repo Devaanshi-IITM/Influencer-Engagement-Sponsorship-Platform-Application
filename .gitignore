@@ -1,2 +1,4 @@
-/my_env
+myenv
 requirements.txt
+__pycache__
+instance

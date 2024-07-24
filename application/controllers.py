@@ -6,7 +6,7 @@ from .models import * #import models
 
 @app.route('/')
 def home():
-    return "<h2>Welcome to app</h2>"
+    return render_template('home.html')
 
 #for user login
 @app.route('/userlogin', methods = ['GET','POST'])
@@ -52,11 +52,12 @@ def influencer_register():
         fullName = request.form.get("fullName")
         niche = request.form.get("niche")
         platform = request.form.get("platform")
+        profile_picture = request.form.get("profile_picture")
         this_user = Influencer.query.filter_by(user_name = u_name).first()
         if this_user:
             return "user already exists!"
         else:
-            new_user = Influencer(user_name = u_name, password = pwd, niche = niche, full_name = fullName, platform = platform, role = "influencer")
+            new_user = Influencer(user_name = u_name, password = pwd, niche = niche, full_name = fullName, platform = platform, role = "influencer", profile_pic = profile_picture)
             db.session.add(new_user)
             db.session.commit()
             return redirect('/userlogin')
@@ -114,28 +115,27 @@ def delete_campaign(sponsor_id, campaign_id):
     return redirect(f'/sponsor/{sponsor.id}')
 
 # allow sponsor to edit campaign
-@app.route('/sponsor/edit/<int:sponsor_id>/campaign/<int:campaign_id>', methods = ['GET','POST'])
+@app.route('/sponsor/edit/<int:sponsor_id>/campaign/<int:campaign_id>', methods=['GET', 'POST'])
 def edit_campaign(sponsor_id, campaign_id):
     sponsor = Sponsor.query.get(sponsor_id)
-    if sponsor:
-        campaigns = sponsor.campaign
-        '''print(f"Campaigns for sponsor {sponsor.id}: {campaigns}")
-        for campaign in campaigns:
-            print(f"Campaign ID: {campaign.camp_id}, Name: {campaign.camp_name}")
-            '''
+    if not sponsor:
+        return "Sponsor not found"
+
+    campaign = Campaign.query.get(campaign_id)
+    if not campaign:
+        return "No campaign found"
+
     if request.method == 'POST':
-        campaign = Campaign.query.get(campaign_id)
-        print(campaign)
-        campaign.camp_name = request.form.get["camp_name"]
-        campaign.category = request.form.get["category"]
-        campaign.s_date = request.form.get["s_date"]
-        campaign.e_date = request.form.get["e_date"]
-        campaign.budget = request.form.get["budget"]
-        campaign.visibility = request.form.get["visibility"]
-        campaign.description = request.form.get["describe"]
+        campaign.camp_name = request.form.get("camp_name")
+        campaign.category = request.form.get("category")
+        campaign.s_date = request.form.get("s_date")
+        campaign.e_date = request.form.get("e_date")
+        campaign.budget = request.form.get("budget")
+        campaign.visibility = request.form.get("visibility")
+        campaign.description = request.form.get("describe")
         db.session.commit()
-        return redirect(f'/sponsor/{sponsor.id}')
-    return render_template('edit_camp.html', s_name = sponsor, campaign = campaigns)
+        return redirect(f'/sponsor/{sponsor_id}')
+    return render_template('edit_camp.html', s_name=sponsor, campaign=campaign)
 
 
 # allows sponsor to create new campaign
@@ -205,16 +205,53 @@ def influencer_dash(influencer_id):
     else:
         ad_requests = []
 
-    return render_template("influencer_dash.html", influencer=influencer, ad_requests=ad_requests)
+    return render_template("influencer_dash.html", influencer = influencer, ad_requests=ad_requests)
     
 # allow influencer to reject an ad_request
-'''@app.route('/influencer/<int:influencer_id>/ad_request/<int:ad_request_id>', methods=['POST'])
-def reject_adreq(influencer_id, ad_request_id):
+@app.route('/influencer/<int:influencer_id>/reject_ad_request/<int:request_id>', methods=['POST'])
+def reject_ad_request(influencer_id, request_id):
     influencer = Influencer.query.get(influencer_id)
-    ad_request = AdRequest.query.filterby(influencer_id = influencer.id, req_id = ad_request_id).first()
-    if request.method == 'post':
-        ad_request.status = "rejected"
+    ad_request = AdRequest.query.filter_by(request_id = request_id, influencer_id = influencer_id).first()
+    ad_request.status = 'rejected'
+    ad_request.is_accepted = False
+    db.session.commit()
+
+    return redirect(f'/influencer/{influencer_id}')
+    
+# allow influencer to accept an ad_request
+@app.route('/influencer/accept/<int:influencer_id>/ad_request/<int:request_id>', methods=['POST'])
+def accept_ad_request(influencer_id, request_id):
+    influencer = Influencer.query.get(influencer_id) #look for influencer by his id
+    if not influencer:
+        return "Influencer not found"
+    
+    ad_request = AdRequest.query.filter_by(request_id = request_id, influencer_id = influencer_id).first() # look for ad request and influencer.
+    if not ad_request:
+        return "Ad request not found"
+    
+    ad_request.status = 'accepted'
+    ad_request.is_accepted = True
+    db.session.commit()
+    return redirect(f'/influencer/{influencer_id}')
+    
+    
+
+# allow influlencer to update his/her profile
+@app.route('/influencer/update/<int:influencer_id>', methods=['GET', 'POST'])
+def update_profile(influencer_id):
+    influencer = Influencer.query.get(influencer_id)
+    if not influencer:
+        return "Influencer not found"
+
+    if request.method == 'POST':
+        influencer.user_name = request.form.get("u_name")
+        influencer.password = request.form.get("pwd")
+        influencer.niche = request.form.get("niche")
+        influencer.full_name = request.form.get("fullName")
+        influencer.platfrom = request.form.get("platfrom")
+        influencer.followers = request.form.get("followers")
+        influencer.profile_pic = request.form.get("profile_picture")
+        
         db.session.commit()
-        return render_template("influencer_dash.html", influencer_id = influencer_id)
-    return render_template("influencer_dash.html", influencer = influencer)
-'''
+        return redirect(f'/influencer/{influencer_id}')
+    return render_template('update_influencer_profile.html', influencer=influencer)

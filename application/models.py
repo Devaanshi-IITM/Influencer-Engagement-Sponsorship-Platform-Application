@@ -54,7 +54,6 @@ class Campaign(db.Model):
     is_completed = db.Column(db.Boolean,  default =  False) 
     sponsor = db.relationship('Sponsor', backref='campaign') #pseudo col
     
-    
 #ad_request table
 class AdRequest(db.Model):
     __tablename__ = 'ad_request'
@@ -67,7 +66,6 @@ class AdRequest(db.Model):
     status = db.Column(db.String, default = "pending")
     end_date = db.Column(db.String, nullable = False)
     campaign = db.relationship('Campaign', backref='ad_requests') # pseudo
-    #influencer = db.relationship('Influencer', backref='ad_requests') #pseudo
     is_accepted = db.Column(db.Boolean,  default =  False)
 
 

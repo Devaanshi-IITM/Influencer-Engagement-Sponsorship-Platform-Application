@@ -13,8 +13,8 @@
 <body>
     <div id="main">
         <div id="canvas">
-            <div id="campaign-section">
-                <form action= '/sponsor/edit/{{ s_name.id }}/campaign/{{campaign.camp_id}}' method="post"> <!-- form action-->
+            <div id= "campaign-section">
+                <form action= "/sponsor/edit/{{ s_name.id }}/campaign/{{ campaign.camp_id }}" method="post"> <!-- form action-->
 
                     <h2 style="text-align: center;">My Campaign</h2>
 
@@ -54,7 +54,7 @@
 
                     <div class="form-group">
                         <label for="campaignDescription">Description</label>
-                        <textarea class="form-control" id="campaignDescription" rows="2" name="describe" >{{ campaign.describe }}</textarea>
+                        <textarea class="form-control" id="campaignDescription" rows="2" name="describe" >{{ campaign.description }}</textarea>
                     </div>
                     <br>
                     <div style="text-align: center;">
