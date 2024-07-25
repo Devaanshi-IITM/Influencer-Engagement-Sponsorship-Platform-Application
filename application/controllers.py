@@ -52,12 +52,13 @@ def influencer_register():
         fullName = request.form.get("fullName")
         niche = request.form.get("niche")
         platform = request.form.get("platform")
+        followers = request.form.get("followers")
         profile_picture = request.form.get("profile_picture")
         this_user = Influencer.query.filter_by(user_name = u_name).first()
         if this_user:
             return "user already exists!"
         else:
-            new_user = Influencer(user_name = u_name, password = pwd, niche = niche, full_name = fullName, platform = platform, role = "influencer", profile_pic = profile_picture)
+            new_user = Influencer(user_name = u_name, password = pwd, niche = niche, search_niche = raw(niche), full_name = fullName, platform = platform, followers = followers, role = "influencer", profile_pic = profile_picture)
             db.session.add(new_user)
             db.session.commit()
             return redirect('/userlogin')
@@ -150,20 +151,22 @@ def new_campaign(sponsor_id):
         budget = request.form.get("budget")
         visibility = request.form.get("visibility")
         description = request.form.get("describe")
-        new_camp = Campaign(camp_name = camp_name, sponsor_id = sponsor.id, category = category, s_date = s_date, e_date = e_date, budget = budget, visibility = visibility, description = description)
+        new_camp = Campaign(camp_name = camp_name, sponsor_id = sponsor.id, category = category, search_category =  raw(category) ,s_date = s_date, e_date = e_date, budget = budget, visibility = visibility, description = description)
         db.session.add(new_camp)
         db.session.commit()
         return redirect(f'/sponsor/{sponsor.id}')
     return render_template('new_camp.html', s_name = sponsor)
+       # search_category is for search functionality implementation
+
 
 # allow sponsor to create an ad_request
 @app.route('/sponsorad/<int:sponsor_id>/campaign/<int:campaign_id>', methods = ['GET','POST'])
 def create_adRequest(sponsor_id, campaign_id):
+   
     sponsor = Sponsor.query.get(sponsor_id)
     if request.method == 'GET':
         return render_template('create_ad.html', s_name = sponsor, campaign_id = campaign_id )
-    campaign = Campaign.query.filter_by(camp_id=campaign_id, sponsor_id = sponsor_id)
-
+    
     if request.method == 'POST':
         niche = request.form.get("niche")
         requirements = request.form.get("requirements")
@@ -171,52 +174,61 @@ def create_adRequest(sponsor_id, campaign_id):
         status = request.form.get("status")
         end_date = request.form.get("end_date")
         influencer = Influencer.query.filter_by(niche=niche).first()
-
+        print(influencer)
         if influencer:
             my_req = AdRequest(influencer_id=influencer.id, campaign_id=campaign_id, niche=niche, requirements=requirements,payment_amt=payment_amt, status=status, end_date = end_date)
-            
+            print(my_req)
             db.session.add(my_req)
             db.session.commit()
             return redirect(f'/sponsor/{sponsor.id}')
         else:
-            error_msg = "No influencer with the specified niche."       
+            error_msg = "No influencer with the specified niche."    
+            #redirect to error page   
         
         return redirect(f'/sponsor/{sponsor.id}')
-    return render_template('create_ad.html', s_name = sponsor, error = error_msg)
+    
 
 
+# convert a text into lower case, will use this function for searching functionalitiy
+def raw(text):
+    split_list = text.split() ## ---> will give me a list splitted by space
+    search_word = ''
+    for word in split_list:
+        search_word += word.lower()
+    return search_word
 
 #search functionality for sponsor
 @app.route('/search')
-def text_search():
-    search_word = request.args.get('search_word')
-    search_word = "%" + search_word + "%"
-    #print(search_word)
-    full_name = Influencer.query.filter(Influencer.full_search_name.like(search_word)).all()
-    return render_template('srch_influencer.html',full_name = full_name)
+def text_search(word):
+    return word
+    
+    
 
-
-# end point for influencer dashboard
+#end point for influencer dashboard
 @app.route('/influencer/<int:influencer_id>', methods=['GET', 'POST'])
 def influencer_dash(influencer_id):
     influencer = Influencer.query.get(influencer_id)
     if influencer:
-        ad_requests = influencer.ad_requests  # Assuming this correctly fetches related ad requests
+        ad_requests = influencer.ad_requests  # fetches all request associated with influencer
+        print(ad_requests)
     else:
         ad_requests = []
 
     return render_template("influencer_dash.html", influencer = influencer, ad_requests=ad_requests)
+
     
 # allow influencer to reject an ad_request
 @app.route('/influencer/<int:influencer_id>/reject_ad_request/<int:request_id>', methods=['POST'])
 def reject_ad_request(influencer_id, request_id):
-    influencer = Influencer.query.get(influencer_id)
-    ad_request = AdRequest.query.filter_by(request_id = request_id, influencer_id = influencer_id).first()
-    ad_request.status = 'rejected'
-    ad_request.is_accepted = False
-    db.session.commit()
-
-    return redirect(f'/influencer/{influencer_id}')
+    if request.method == 'POST':
+        influencer = Influencer.query.get(influencer_id)
+        print(influencer)
+        if influencer:
+            ad_request = AdRequest.query.filter_by(request_id = request_id, influencer_id = influencer_id).first()
+            ad_request.status = 'rejected'
+            ad_request.is_accepted = False
+            db.session.commit()
+            return redirect(f'/influencer/{influencer_id}')
     
 # allow influencer to accept an ad_request
 @app.route('/influencer/accept/<int:influencer_id>/ad_request/<int:request_id>', methods=['POST'])

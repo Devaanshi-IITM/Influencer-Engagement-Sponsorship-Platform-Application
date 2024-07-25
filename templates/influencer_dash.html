@@ -28,7 +28,7 @@
               <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                   <button type="button" class="btn btn-outline-info" style=" margin-right: 10px;"
-                  onclick="location.href='/influencer/update/{{ influencer.id }}'"> Update Profile </button>
+                    onclick="location.href='/influencer/update/{{ influencer.id }}'"> Update Profile </button>
                 </li>
               </ul>
               <form class="d-flex" style="margin-right: 10px;">
@@ -54,91 +54,99 @@
           </div>
         </div><br>
 
-        <!--New Ad Request-->
+        <!-- Display Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+        <div class="alert alert-{{ messages[0][0] }} alert-dismissible fade show" role="alert">
+          {{ messages[0][1] }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- New Ad Requests -->
         <h5>New Ad Requests</h5>
         <div class="container mt-4">
-            {% if ad_requests|length == 0 %}
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr style="text-align: center;">
-                        <th scope="col">S.No.</th>
-                        <th scope="col">Campaign</th>
-                        <th scope="col">Requirements</th>
-                        <th scope="col">Payment Amount</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">End_date</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody style="text-align: center;">
-                    {% for req in ad_requests %}
-                    {% if req.status == 'pending' %}
-                    <tr>
-                        <th scope="row">{{ loop.index }}</th>
-                        <td>{{ req.campaign.camp_name }}</td>
-                        <td>{{ req.requirements }}</td>
-                        <td>{{ req.payment_amt }}</td>
-                        <td>{{ req.status }}</td>
-                        <td>{{ req.end_date }}</td>
-                        <td>
-                          <div id="button-container">
-                            <form action='/influencer/accept/{{influencer.id}}/ad_request/{{req.request_id}}' method="post">
-                              <button type="submit" class="btn btn-success" style=" margin-left:20px; margin-right: 20px;">Accept</button>
-                            </form>
-                            <form action='/influencer/{{influencer.id}}/reject_ad_request/{{req.request_id}}' method="POST"
-                              onsubmit="return confirm('Are you sure you want to reject this ad_request?');">
-                              <input type="hidden" name="_method" value="REJECT">
-                              <button type="submit" class="btn btn-danger" >Reject</button>
-                            </form>
-                          </div>
-                        </td>
-                    </tr>
-                    {% endif %}
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <p style="color:lawngreen"><b><i> Ooops !! no ad requests for you :(</i></b></p>
-            {% endif %}
+          {% if ad_requests|selectattr('status', 'equalto', 'pending')|list|length == 0 %}
+          <p style="color:lawngreen"><b><i> Ooops !! no ad requests for you :(</i></b></p>
+          {% else %}
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr style="text-align: center;">
+                <th scope="col">S.No.</th>
+                <th scope="col">Campaign</th>
+                <th scope="col">Requirements</th>
+                <th scope="col">Payment Amount</th>
+                <th scope="col">Status</th>
+                <th scope="col">End_date</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody style="text-align: center;">
+              {% for req in ad_requests %}
+              {% if req.status == 'pending' %}
+              <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ req.campaign.camp_name }}</td>
+                <td>{{ req.requirements }}</td>
+                <td>{{ req.payment_amt }}</td>
+                <td>{{ req.status }}</td>
+                <td>{{ req.end_date }}</td>
+                <td>
+                  <div id="button-container">
+                    <form action='/influencer/accept/{{ influencer.id }}/ad_request/{{ req.request_id }}' method="post">
+                      <button type="submit" class="btn btn-success"
+                        style="margin-left:20px; margin-right: 20px;">Accept</button>
+                    </form>
+                    <form action='/influencer/{{ influencer.id }}/reject_ad_request/{{ req.request_id }}' method="POST"
+                      onsubmit="return confirm('Are you sure you want to reject this ad_request?');">
+                      <input type="hidden" name="_method" value="REJECT">
+                      <button type="submit" class="btn btn-danger">Reject</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
         </div>
 
-      <!--Influencer's current or active campaigns-->
-      <h5>My Engagements</h5>
-      <div class="container mt-4">
-          {% if ad_requests|length == 0 %}
+
+        <!--Influencer's current or active campaigns-->
+        <h5>My Engagements</h5>
+        <div class="container mt-4">
+          {% set active_requests = ad_requests|selectattr('status', 'equalto', 'accepted')|list %}
+          {% if active_requests|length > 0 %}
           <table class="table table-bordered table-striped">
-              <thead>
-                  <tr style="text-align: center;">
-                      <th scope="col">S.No.</th>
-                      <th scope="col">Campaign</th>
-                      <th scope="col">To do</th>
-                      <th scope="col">Status</th>
-                      <th scope="col">Expires</th>
-                      
-                  </tr>
-              </thead>
-              <tbody style="text-align: center;">
-                  {% for req in ad_requests %}>
-                  {% if req.status == 'accepted' %}
-                  <tr>
-                      <th scope="row">{{ loop.index }}</th>
-                      <td>{{ req.campaign.camp_name }}</td>
-                      <td>{{ req.requirements }}</td>
-                      <td>active</td>   <!-- active status for accepted requests-->
-                      <td>{{ req.end_date }}</td>
-            
-                  </tr>
-                
-                  {% endif %}
-                  {% endfor %}
-              </tbody>
+            <thead>
+              <tr style="text-align: center;">
+                <th scope="col">S.No.</th>
+                <th scope="col">Campaign</th>
+                <th scope="col">To do</th>
+                <th scope="col">Status</th>
+                <th scope="col">Expires</th>
+              </tr>
+            </thead>
+            <tbody style="text-align: center;">
+              {% for req in active_requests %}
+              <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ req.campaign.camp_name }}</td>
+                <td>{{ req.requirements }}</td>
+                <td>active</td>
+                <td>{{ req.end_date }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
           </table>
           {% else %}
-          <p style="color: crimson;"><b><i> You seem to be enjoying your ideal time &#x1F601;</i></b> <p>
+          <p style="color: crimson;"><b><i> You seem to be enjoying your ideal time &#x1F601;</i></b></p>
           {% endif %}
-      </div>
-
-
+        </div>
 
       </div>
     </div>

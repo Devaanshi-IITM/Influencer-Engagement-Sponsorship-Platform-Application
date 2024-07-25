@@ -19,12 +19,14 @@ class Influencer(db.Model):
     user_name = db.Column(db.String, nullable = False, unique = True)
     password = db.Column(db.String, nullable = False)
     niche = db.Column(db.String, nullable = False)
+    search_niche = db.Column(db.String)
     full_name = db.Column(db.String, nullable = False)
     platform = db.Column(db.String, nullable = False)
     followers = db.Column(db.String)
     role = db.Column(db.String, nullable = False)
     profile_pic  = db.Column(db.String)
-    ad_requests = db.relationship("AdRequest", backref="influencer", lazy = True) #psedu col
+    is_flagged = db.Column(db.Boolean, default = False)
+    ad_requests = db.relationship('AdRequest', backref = 'influencer', lazy = True) #psedu col
     
 
 #Sponsor table
@@ -36,6 +38,7 @@ class Sponsor(db.Model):
     full_name = db.Column(db.String, nullable = False)
     industry = db.Column(db.String, nullable = False)
     role = db.Column(db.String, nullable = False)
+    is_flagged = db.Column(db.Boolean, default = False)
     #campaigns = db.relationship('Campaign', backref = 'related_sponsor')
     
 
@@ -46,12 +49,14 @@ class Campaign(db.Model):
     camp_name = db.Column(db.String, nullable = False)
     sponsor_id = db.Column(db.Integer, db.ForeignKey('sponsor.id'))
     category = db.Column(db.String, nullable = False)
+    search_category =db.Column(db.String, nullable = False) # for influencer to search relevant campaigns
     s_date = db.Column(db.String, nullable = False)
     e_date = db.Column(db.String, nullable = False)
     budget = db.Column(db.Integer, nullable = False)
     visibility = db.Column(db.String, default = "public")
     description = db.Column(db.String)
     is_completed = db.Column(db.Boolean,  default =  False) 
+    is_flagged = db.Column(db.Boolean, default = False)
     sponsor = db.relationship('Sponsor', backref='campaign') #pseudo col
     
 #ad_request table
@@ -67,7 +72,6 @@ class AdRequest(db.Model):
     end_date = db.Column(db.String, nullable = False)
     campaign = db.relationship('Campaign', backref='ad_requests') # pseudo
     is_accepted = db.Column(db.Boolean,  default =  False)
-
 
     
   
