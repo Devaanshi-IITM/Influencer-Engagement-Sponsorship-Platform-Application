@@ -1,4 +1,7 @@
 myenv/
 requirements.txt
-__pycache__
 instance
+__pycache__/
+*.pyc
+*.pyo
+
