@@ -198,9 +198,14 @@ def raw(text):
     return search_word
 
 #search functionality for sponsor
-@app.route('/search')
-def text_search(word):
-    return word
+@app.route('/inf_search')
+def text_search():
+    srch_word = request.args.get('srch_word') # takes data when data is coming from url
+    srch_word = "%"+raw(srch_word)+"%"
+
+    # records with influencer name, niche, following, 
+    i_niche =  Influencer.query.filter(Influencer.search_niche.like(srch_word)).all() # can also use ilike instead of like to make search case insensitive
+    return render_template('sponsor_srch_result.html', i_niche = i_niche )
     
     
 

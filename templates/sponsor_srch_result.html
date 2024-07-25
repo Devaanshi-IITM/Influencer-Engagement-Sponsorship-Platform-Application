@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <title>Search Results</title>
+  <link rel="stylesheet" href="../static/dashboard.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+</head>
+
+<body>
+  <div id="main">
+    <div id="canvas">
+      <div id="dashboard-body">
+        <!-- nav bar for influencer dashboard -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <div class="container-fluid">
+            <label style="margin-right: 15px;"> <h5>Confluence</h5></label>
+            <!--<a class="navbar-brand" href="#">My Dashboard</a>-->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+              aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              </ul>
+        
+              <form class="d-flex">
+                <button class="btn btn-outline-danger" type="button"
+                  onclick="location.href= '/userlogin'">Logout</button>
+              </form>
+
+            </div>
+          </div>
+        </nav><br>
+
+        <!--search result -->
+        <h5>Your Search Results</h5>
+        {% if i_niche|length == 0 %}
+        <h3> No result found</h3>
+        {% else %}
+        <div class="container mt-4"> 
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr style="text-align: center;">
+                <th scope="col">S.No.</th>
+                <th scope="col">Name</th>
+                <th scope="col">Niche</th>
+                <th scope="col">Followers</th>
+                <th scope="col">Platform</th>
+              </tr>
+            </thead>
+            <tbody style="text-align: center;">
+              {% for influencer in i_niche %}
+              <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ influencer.full_name }}</td>
+                <td>{{ influencer.niche }}</td>
+                <td>{{ influencer.followers }}</td>
+                <td>{{ influencer.platform }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+        </div>
+
+           
+
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

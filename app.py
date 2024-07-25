@@ -5,6 +5,7 @@ app = None
 
 def create_app():
     app = Flask(__name__) 
+    app.debug = True
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///inspo.sqlite3" # insp -- > infuencer sponsor platform, its just name
     db.init_app(app) # app shuld be configured with db object.
     app.app_context().push() # direct acessing app by other modules such as db
