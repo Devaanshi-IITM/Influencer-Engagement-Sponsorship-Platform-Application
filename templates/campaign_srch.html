@@ -48,19 +48,25 @@
               <tr style="text-align: center;">
                 <th scope="col">S.No.</th>
                 <th scope="col">Name</th>
-                <th scope="col">Niche</th>
-                <th scope="col">Followers</th>
-                <th scope="col">Platform</th>
+                <th scope="col">Category</th>
+                <th scope="col">Requirements</th>
+                <th scope="col">Begins</th>
+                <th scope="col">Ends</th>
+                <th scope="col">Type</th>
+                <th scope="col">Description</th>
               </tr>
             </thead>
             <tbody style="text-align: center;">
-              {% for influencer in search_results %}
+              {% for campaign in search_results %}
               <tr>
                 <th scope="row">{{ loop.index }}</th>
-                <td>{{ influencer.full_name }}</td>
-                <td>{{ influencer.niche }}</td>
-                <td>{{ influencer.followers }}</td>
-                <td>{{ influencer.platform }}</td>
+                <td>{{ campaign.camp_name }}</td>
+                <td>{{ campaign.category }}</td>
+                <td>{{ campaign.requirements }}</td>
+                <td>{{ campaign.s_date }}</td>
+                <td>{{ campaign.e_date }}</td>
+                <td>{{ campaign.visibility }}</td>
+                <td>{{ campaign.description }}</td>
               </tr>
               {% endfor %}
             </tbody>

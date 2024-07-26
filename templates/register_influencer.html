@@ -32,10 +32,18 @@
                         <input type="text" class="form-control" id="name" placeholder="Enter your name" name="fullName"
                             required>
                     </div>
-                    <div class="mb-3">
-                        <label for="niche" class="form-label">Niche</label>
-                        <input type="text" class="form-control" id="niche" placeholder="Enter your niche" name="niche"
-                            required>
+                    <div class="form-group">
+                        <label for="niche">Select Your Niche</label>
+                        <select class="form-control" id="platform" required name="niche">
+                            <option value="technology">Technology</option>
+                            <option value="food">Food</option>
+                            <option value="health">Health & Wellness</option>
+                            <option value="lifestyle">Lifestyle</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="fashion">Fashion</option>
+                            <option value="education">Education</option>
+                            <option value="others">Others</option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="followers" class="form-label">Followers</label>

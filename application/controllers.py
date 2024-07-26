@@ -202,10 +202,26 @@ def raw(text):
 def text_search():
     srch_word = request.args.get('srch_word') # takes data when data is coming from url
     srch_word = "%"+raw(srch_word)+"%"
-
-    # records with influencer name, niche, following, 
+    srch_name = '%'+srch_word.lower()+'%'
+    srch_platform = '%'+srch_word.lower()+'%'
+    srch_followers = '%'+srch_word.lower()+'%'
     i_niche =  Influencer.query.filter(Influencer.search_niche.like(srch_word)).all() # can also use ilike instead of like to make search case insensitive
-    return render_template('sponsor_srch_result.html', i_niche = i_niche )
+    i_name = Influencer.query.filter(Influencer.full_name.like(srch_name)).all()
+    i_platfrom = Influencer.query.filter(Influencer.platform.like(srch_platform)).all()
+    i_followers = Influencer.query.filter(Influencer.followers.like(srch_followers)).all()
+    search_results = i_niche + i_name + i_platfrom + i_followers
+    return render_template('sponsor_srch_result.html', search_results = search_results )
+
+#search functionality for influencer
+@app.route('/search')
+def search():
+    srch_word = request.args.get('srch_word') # takes data when data is coming from url
+    srch_word = "%"+raw(srch_word)+"%"   
+    srch_type = "%"+srch_word.lower()+"%"
+    srch_cat =  Campaign.query.filter(Campaign.search_category.like(srch_word)).all() # can also use ilike instead of like to make search case insensitive
+    srch_type = Campaign.query.filter(Campaign.visibility.like(srch_type), Campaign.visibility == 'public').all()
+    search_results = srch_cat + srch_type
+    return render_template('campaign_srch.html', search_results = search_results )
     
     
 

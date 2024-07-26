@@ -19,7 +19,7 @@ class Influencer(db.Model):
     user_name = db.Column(db.String, nullable = False, unique = True)
     password = db.Column(db.String, nullable = False)
     niche = db.Column(db.String, nullable = False)
-    search_niche = db.Column(db.String)
+    search_niche  = db.Column(db.String)
     full_name = db.Column(db.String, nullable = False)
     platform = db.Column(db.String, nullable = False)
     followers = db.Column(db.String)

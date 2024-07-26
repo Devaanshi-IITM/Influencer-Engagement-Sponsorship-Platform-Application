@@ -31,8 +31,8 @@
                     onclick="location.href='/influencer/update/{{ influencer.id }}'"> Update Profile </button>
                 </li>
               </ul>
-              <form class="d-flex" style="margin-right: 10px;" >
-                <input class="form-control me-2" type="search" placeholder="Search Campaign" aria-label="Search" >
+              <form class="d-flex" style="margin-right: 10px;" action="/search">
+                <input class="form-control me-2" type="search" placeholder="Search Campaign" aria-label="Search" name="srch_word">
                 <button class="btn btn-outline-success" type="submit">Search</button>
               </form>
               <form class="d-flex">
@@ -53,18 +53,6 @@
             <p>Active on {{ influencer.platform }}</p>
           </div>
         </div><br>
-
-        <!-- Display Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-        <div class="alert alert-{{ messages[0][0] }} alert-dismissible fade show" role="alert">
-          {{ messages[0][1] }}
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        {% endif %}
-        {% endwith %}
 
         <!-- New Ad Requests -->
         <h5>New Ad Requests</h5>
