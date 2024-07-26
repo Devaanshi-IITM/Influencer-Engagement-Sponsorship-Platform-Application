@@ -9,7 +9,7 @@ class Admin(db.Model):
     user_name = db.Column(db.String, nullable = False, unique = True)
     password = db.Column(db.String, nullable = False)
     full_name = db.Column(db.String, nullable = False)
-    role = db.Column(db.String, nullable = False) 
+    role = db.Column(db.String, default = "admin") 
 
 
 #Influencer table

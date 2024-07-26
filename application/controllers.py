@@ -3,7 +3,7 @@ from flask import Flask, render_template,redirect,request
 from flask import current_app as app # this refers to app.py we created, to avoid circular import.
 from .models import * #import models 
 
-
+# route for home page
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -19,18 +19,15 @@ def user_login():
         admin = Admin.query.filter_by(user_name = u_name).first()
         if influencer:
             if influencer.password == pwd:
-                if influencer.role == "influencer":
-                    print(influencer)
-            return redirect(f'/influencer/{influencer.id}')
+                return redirect(f'/influencer/{influencer.id}')
         
         elif sponsor:
             if sponsor.password == pwd:
-                if sponsor.role == "sponsor":
-                    return redirect(f'/sponsor/{sponsor.id}')
+                return redirect(f'/sponsor/{sponsor.id}')
+            
         elif admin:
             if admin.password == pwd:
-                if admin.role == "admin":
-                    return render_template("admin_dash.html", name=admin.user_name)
+                return redirect(f'/admin/{admin.id}')
         else:
             return render_template('login.html', msg="Incorrect username or password")
 
@@ -82,10 +79,74 @@ def sponsor_register():
             return redirect('/userlogin')
     return render_template('register_sponsor.html')
 
-# fetch sponsor info
-def fetch_sponsor_info(id):
-    sponsor_info = Sponsor.query.filter_by(id=id).first()
-    return sponsor_info
+# set up admin dashboard
+@app.route('/admin/<int:admin_id>', methods=['GET', 'POST'])
+def admin(admin_id):
+    admin = Admin.query.get(admin_id)
+    if admin:
+        #influencer data
+        active_inf = Influencer.query.filter_by(is_flagged = False).count()
+        flag_inf = Influencer.query.filter_by(is_flagged = True).count()
+        total_inf = active_inf + flag_inf
+
+        #sposnors data
+        active_spon = Sponsor.query.filter_by(is_flagged = False).count()
+        flag_spon = Sponsor.query.filter_by(is_flagged = True).count()
+        t_sponsor = active_spon + flag_spon
+
+        # campaign data
+        public_camp = Campaign.query.filter(Campaign.visibility == 'public').count()
+        pvt_camp = Campaign.query.filter(Campaign.visibility == 'private').count()
+        f_camp = Campaign.query.filter_by(is_flagged = True).count()
+        total_camp = public_camp + pvt_camp + f_camp
+
+        # ad request data
+        pending_req = AdRequest.query.filter(AdRequest.status == 'pending').count()
+        accepted_req = AdRequest.query.filter(AdRequest.status == 'accepted').count()
+        rejected_req = AdRequest.query.filter(AdRequest.status == 'rejected').count()
+        total_req = pending_req + accepted_req + rejected_req
+
+        #flagged user
+        total_flagged = flag_inf + flag_spon + f_camp
+
+        return render_template('admin_dash.html', admin = admin, active_inf = active_inf, flag_inf = flag_inf, total_inf = total_inf,
+                               active_spon = active_spon, flag_spon = flag_spon, t_sponsor = t_sponsor,
+                               public_camp = public_camp, pvt_camp = pvt_camp , f_camp = f_camp, total_camp = total_camp,
+                               pending_req = pending_req, accepted_req = accepted_req, rejected_req = rejected_req, total_req = total_req,
+                               total_flagged = total_flagged)
+
+
+
+# fetch influencers for admin
+@app.route('/admin/influencer')
+def fetch_influencer_info():
+    influencer_info = Influencer.query.all()
+    flagged_influencers = Influencer.query.filter_by(is_flagged = True).all()  
+    return render_template('influencers_stat.html', influencers = influencer_info,  flagged_influencers = flagged_influencers)
+
+
+# fetch sponsor info for admin
+@app.route('/admin/sponsor')
+def fetch_sponsor_info():
+    sponsor_info = Sponsor.query.all()
+    flagged_sponsors = Sponsor.query.filter_by(is_flagged = True).all()
+    return render_template ('sponsor_stats.html', sponsors = sponsor_info, flagged_sponsors = flagged_sponsors)
+
+# fetch camapigns info for admin
+@app.route('/admin/campaigns')
+def fetch_camp_info():
+    camapign_info = Campaign.query.all()
+    flagged_camps = Campaign.query.filter_by(is_flagged = True).all()
+    return render_template ('campaign_stats.html', campaigns = camapign_info, flagged_campaigns = flagged_camps)
+
+# fetch camapigns info for admin
+@app.route('/admin/ad_requests')
+def fetch_ad_info():
+    ad_info = AdRequest.query.all()
+    return render_template ('ad_request_stats.html', ads = ad_info)
+
+
+
 
 # end point for sponsor (managing camapigns etc.)
 @app.route('/sponsor/<int:sponsor_id>', methods=['GET', 'POST'])
@@ -211,6 +272,9 @@ def text_search():
     i_followers = Influencer.query.filter(Influencer.followers.like(srch_followers)).all()
     search_results = i_niche + i_name + i_platfrom + i_followers
     return render_template('sponsor_srch_result.html', search_results = search_results )
+
+
+
 
 #search functionality for influencer
 @app.route('/search')
