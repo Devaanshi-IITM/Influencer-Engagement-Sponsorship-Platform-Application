@@ -65,6 +65,7 @@
               <tr style="text-align: center;">
                 <th scope="col">S.No.</th>
                 <th scope="col">Campaign</th>
+                <th scope="col">Category</th>
                 <th scope="col">Requirements</th>
                 <th scope="col">Payment Amount</th>
                 <th scope="col">Status</th>
@@ -78,6 +79,7 @@
               <tr>
                 <th scope="row">{{ loop.index }}</th>
                 <td>{{ req.campaign.camp_name }}</td>
+                <td>{{ req.niche }}</td>
                 <td>{{ req.requirements }}</td>
                 <td>{{ req.payment_amt }}</td>
                 <td>{{ req.status }}</td>

@@ -39,7 +39,6 @@ class Sponsor(db.Model):
     industry = db.Column(db.String, nullable = False)
     role = db.Column(db.String, nullable = False)
     is_flagged = db.Column(db.Boolean, default = False)
-    #campaigns = db.relationship('Campaign', backref = 'related_sponsor')
     
 
 #campaign table   
@@ -64,13 +63,15 @@ class AdRequest(db.Model):
     __tablename__ = 'ad_request'
     request_id = db.Column(db.Integer, primary_key = True)
     campaign_id = db.Column(db.Integer, db.ForeignKey('campaign.camp_id'), nullable=False)
-    influencer_id = db.Column(db.Integer, db.ForeignKey('influencer.id'), nullable=False)
+    influencer_id = db.Column(db.Integer, db.ForeignKey('influencer.id'), nullable = True)
+    sponsor_id = db.Column(db.Integer, db.ForeignKey('sponsor.id'), nullable=False)
     niche = db.Column(db.String, nullable = False)
     requirements = db.Column(db.String, nullable = False)
     payment_amt = db.Column(db.String, default = 1000)
     status = db.Column(db.String, default = "pending")
     end_date = db.Column(db.String, nullable = False)
-    campaign = db.relationship('Campaign', backref='ad_requests') # pseudo
+    campaign = db.relationship('Campaign', backref='ad_requests')
+    sponsor = db.relationship('Sponsor', backref='ad_requests')  # pseudo
     is_accepted = db.Column(db.Boolean,  default =  False)
 
     

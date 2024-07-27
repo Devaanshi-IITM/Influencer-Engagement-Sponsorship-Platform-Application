@@ -96,7 +96,49 @@
                 <div style="text-align: center;">
                     <button type="submit" class="btn btn-secondary" style="background-color: coral;"
                         onclick="location.href='/new_campaign/{{ s_name.id }}'">Create Campaign</button>
-                </div>
+                </div><br><br>
+
+                <!--diaplay created ad requests -->
+                <h3><i>Ad requests</i></h3>
+                <br>
+
+                <!--display current  ad request-->
+                <div class="container">
+                    <div class="row">
+                        {% if ads %}
+                        {% for ad in ads %}
+                        <div class="col" style="margin-bottom: 40px;">
+                            <div class="card" style="width: 18rem; border-radius: 5%;">
+                                <div class="card-body">
+                                    <h5 class="card-title">Ad Request {{ad.request_id }}</h5>
+                                    <p class="card-text">Campaign : {{ ad.campaign_name }}</p>
+                                    <p class="card-text">Niche : {{ad.niche}}</p>
+                                    <p class="card-text">Status : {{ad.status}}</p>
+                                    <p class="card-text">Requirements : {{ad.requirements}}</p>
+                                    <p class="card-text">Payment_amt (INR) : {{ad.payment_amt}}</p>
+                                    <p class="card-text">Action</p>
+                                    <div id="button-container">
+                                        <button type="button" class="btn btn"
+                                            style="background-color: rgb(109, 4, 109); margin-right: 10px; color:white"
+                                            onclick="location.href=''">Edit</button>
+
+                                        <form action=""
+                                            method="POST"
+                                            onsubmit="return confirm('Are you sure you want to delete this campaign?');">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button type="submit" class="btn btn"
+                                                style="background-color: rgb(109, 4, 109); margin-right: 10px; color: white;">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <p>No ad requests currently.</p>
+                        {% endif %}
+                    </div>
+                </div><br><br>
 
             </div>
         </div>

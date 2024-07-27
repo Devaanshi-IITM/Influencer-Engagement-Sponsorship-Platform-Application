@@ -2,6 +2,7 @@
 from flask import Flask, render_template,redirect,request
 from flask import current_app as app # this refers to app.py we created, to avoid circular import.
 from .models import * #import models 
+from sqlalchemy import or_, and_
 
 # route for home page
 @app.route('/')
@@ -139,26 +140,27 @@ def fetch_camp_info():
     flagged_camps = Campaign.query.filter_by(is_flagged = True).all()
     return render_template ('campaign_stats.html', campaigns = camapign_info, flagged_campaigns = flagged_camps)
 
-# fetch camapigns info for admin
+#fetch camapigns info for admin
 @app.route('/admin/ad_requests')
 def fetch_ad_info():
     ad_info = AdRequest.query.all()
     return render_template ('ad_request_stats.html', ads = ad_info)
 
-
-
-
+#--------------------------------------------------------------------------------------------------------------------#
 # end point for sponsor (managing camapigns etc.)
 @app.route('/sponsor/<int:sponsor_id>', methods=['GET', 'POST'])
 def sponsor_dash(sponsor_id):
     sponsor = Sponsor.query.get(sponsor_id)
     if sponsor:
         campaigns = sponsor.campaign 
+        ads = AdRequest.query.filter_by(sponsor_id = sponsor_id).all()
         #print(f"Campaigns for sponsor {sponsor.id}: {campaigns}") #for debugging
+        for ad in ads:
+            ad.campaign_name = Campaign.query.get(ad.campaign_id).camp_name
     else:
-        campaigns = []        
-    return render_template("sponsor_dash.html", s_name = sponsor, campaigns = campaigns )
-
+        campaigns = [] 
+        ads = []       
+    return render_template("sponsor_dash.html", s_name = sponsor, campaigns = campaigns, ads = ads )
 
 # allow aponsor to delete campaign
 @app.route('/sponsor/<int:sponsor_id>/campaign/<int:campaign_id>', methods=['POST'])
@@ -229,24 +231,21 @@ def create_adRequest(sponsor_id, campaign_id):
         return render_template('create_ad.html', s_name = sponsor, campaign_id = campaign_id )
     
     if request.method == 'POST':
-        niche = request.form.get("niche")
+        niche = request.form.get("niche").strip().lower()
         requirements = request.form.get("requirements")
         payment_amt = request.form.get("payment_amt")
         status = request.form.get("status")
         end_date = request.form.get("end_date")
-        influencer = Influencer.query.filter_by(niche=niche).first()
-        print(influencer)
-        if influencer:
-            my_req = AdRequest(influencer_id=influencer.id, campaign_id=campaign_id, niche=niche, requirements=requirements,payment_amt=payment_amt, status=status, end_date = end_date)
-            print(my_req)
-            db.session.add(my_req)
-            db.session.commit()
-            return redirect(f'/sponsor/{sponsor.id}')
-        else:
-            error_msg = "No influencer with the specified niche."    
-            #redirect to error page   
-        
+        #influencer = Influencer.query.filter_by(niche = niche.lower()).first()
+        my_req = AdRequest(campaign_id=campaign_id, sponsor_id = sponsor_id, niche=niche, requirements=requirements,payment_amt=payment_amt, status=status, end_date = end_date)
+        #print(my_req)
+        db.session.add(my_req)
+        db.session.commit()
         return redirect(f'/sponsor/{sponsor.id}')
+          
+    
+# allow sponsor to view ad requests
+
     
 
 
@@ -294,8 +293,9 @@ def search():
 def influencer_dash(influencer_id):
     influencer = Influencer.query.get(influencer_id)
     if influencer:
-        ad_requests = influencer.ad_requests  # fetches all request associated with influencer
-        print(ad_requests)
+       public_req = AdRequest.query.join(Campaign).filter(Campaign.visibility == 'public').all()
+       pvt_req = AdRequest.query.join(Campaign).filter(Campaign.visibility == 'private', AdRequest.niche == influencer.niche).all()
+       ad_requests = public_req + pvt_req
     else:
         ad_requests = []
 
