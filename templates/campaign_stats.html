@@ -34,10 +34,11 @@
                   <thead>
                     <tr>
                       <th scope="col">S.No.</th>
-                      <th scope="col">camapign_id</th>
+                      <th scope="col">Camap_id</th>
                       <th scope="col">Name</th>
                       <th scope="col">Sponsor</th>
                       <th scope="col">Category</th>
+                      <th scope="col">Type</th>
                       <th scope="col">Begins</th>
                       <th scope="col">Ends</th>
                       <th scope="col">Budget(INR)</th>
@@ -53,13 +54,13 @@
                       <td>{{campaign.camp_name}}</td>
                       <td>{{campaign.sponsor.full_name}}</td>
                       <td>{{campaign.category}}</td>
+                      <td>{{campaign.visibility}}</td>
                       <td>{{campaign.s_date}}</td>
                       <td>{{campaign.e_date}}</td>
                       <td>{{campaign.budget}}</td>
                       <td>{{campaign.description}}</td>
-                      <td><form action='' method="POST"
+                      <td><form action='/admin/flag_campaign/<int:campaign_id>' method="POST"
                         onsubmit="return confirm('Are you sure you want to flag this campaign?');">
-                        <input type="hidden" name="_method" value="FLAG">
                         <button type="submit" class="btn btn-danger">Flag</button>
                       </form></td>
                     </tr> 

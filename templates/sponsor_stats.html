@@ -47,9 +47,8 @@
                       <td>{{sponsor.id}}</td>
                       <td>{{sponsor.full_name}}</td>
                       <td>{{sponsor.industry}}</td>
-                      <td><form action='' method="POST"
+                      <td><form action='/admin/flag_sponsor/{{sponsor.id}}' method="POST"
                         onsubmit="return confirm('Are you sure you want to flag this sponsor?');">
-                        <input type="hidden" name="_method" value="FLAG">
                         <button type="submit" class="btn btn-danger">Flag</button>
                       </form></td>
                     </tr> 

@@ -51,9 +51,8 @@
                       <td>{{influencer.niche}}</td>
                       <td>{{influencer.followers}}</td>
                       <td>{{influencer.platform}}</td>
-                      <td><form action='' method="POST"
+                      <td><form action='/admin/flag_influencer/{{influencer.id}}' method="POST"
                         onsubmit="return confirm('Are you sure you want to flag this influencer?');">
-                        <input type="hidden" name="_method" value="FLAG">
                         <button type="submit" class="btn btn-danger">Flag</button>
                       </form></td>
                     </tr> 

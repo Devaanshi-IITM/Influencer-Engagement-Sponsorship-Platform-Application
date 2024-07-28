@@ -2,7 +2,6 @@
 from flask import Flask, render_template,redirect,request
 from flask import current_app as app # this refers to app.py we created, to avoid circular import.
 from .models import * #import models 
-from sqlalchemy import or_, and_
 
 # route for home page
 @app.route('/')
@@ -18,13 +17,15 @@ def user_login():
         influencer = Influencer.query.filter_by(user_name = u_name).first() # i.e.the first entry itself
         sponsor = Sponsor.query.filter_by(user_name = u_name).first()
         admin = Admin.query.filter_by(user_name = u_name).first()
-        if influencer:
-            if influencer.password == pwd:
-                return redirect(f'/influencer/{influencer.id}')
+        if influencer and influencer.password == pwd:
+            if influencer.is_flagged == True:
+                return "Login denied, you have been flagged by the organization !!" 
+            return redirect(f'/influencer/{influencer.id}')
         
-        elif sponsor:
-            if sponsor.password == pwd:
-                return redirect(f'/sponsor/{sponsor.id}')
+        elif sponsor and sponsor.password == pwd:
+            if sponsor.is_flagged == True:
+                return "Login denied, you have been flagged by the organization !!"
+            return redirect(f'/sponsor/{sponsor.id}')
             
         elif admin:
             if admin.password == pwd:
@@ -121,7 +122,7 @@ def admin(admin_id):
 # fetch influencers for admin
 @app.route('/admin/influencer')
 def fetch_influencer_info():
-    influencer_info = Influencer.query.all()
+    influencer_info = Influencer.query.filter_by(is_flagged = False).all()
     flagged_influencers = Influencer.query.filter_by(is_flagged = True).all()  
     return render_template('influencers_stat.html', influencers = influencer_info,  flagged_influencers = flagged_influencers)
 
@@ -129,14 +130,14 @@ def fetch_influencer_info():
 # fetch sponsor info for admin
 @app.route('/admin/sponsor')
 def fetch_sponsor_info():
-    sponsor_info = Sponsor.query.all()
+    sponsor_info = Sponsor.query.filter_by(is_flagged = False).all()
     flagged_sponsors = Sponsor.query.filter_by(is_flagged = True).all()
     return render_template ('sponsor_stats.html', sponsors = sponsor_info, flagged_sponsors = flagged_sponsors)
 
 # fetch camapigns info for admin
 @app.route('/admin/campaigns')
 def fetch_camp_info():
-    camapign_info = Campaign.query.all()
+    camapign_info = Campaign.query.filter_by(is_flagged = False).all()
     flagged_camps = Campaign.query.filter_by(is_flagged = True).all()
     return render_template ('campaign_stats.html', campaigns = camapign_info, flagged_campaigns = flagged_camps)
 
@@ -145,6 +146,33 @@ def fetch_camp_info():
 def fetch_ad_info():
     ad_info = AdRequest.query.all()
     return render_template ('ad_request_stats.html', ads = ad_info)
+
+# allow admin to flag an influencer
+@app.route('/admin/flag_influencer/<int:influencer_id>', methods=['POST'])
+def flag_influencer( influencer_id):
+    if request.method == 'POST':
+        influencer = Influencer.query.get(influencer_id)
+        influencer.is_flagged = True
+        db.session.commit()
+        return redirect('influencers_stats.html')
+    
+# allow admin to flag a sponsor
+@app.route('/admin/flag_sponsor/<int:sponsor_id>', methods=['POST'])
+def flag_sponsor( sponsor_id):
+    if request.method == 'POST':
+        sponsor = Sponsor.query.get(sponsor_id)
+        sponsor.is_flagged = True
+        db.session.commit()
+        return redirect('sponsor_stats.html')
+    
+# allow admin to flag a campaign
+@app.route('/admin/flag_campaign/<int:campaign_id>', methods=['POST'])
+def flag_campaign( campaign_id ):
+    if request.method == 'POST':
+        campaign = Campaign.query.get(campaign_id)
+        campaign.is_flagged = True
+        db.session.commit()
+        return redirect('campaign_stats.html')
 
 #--------------------------------------------------------------------------------------------------------------------#
 # end point for sponsor (managing camapigns etc.)
@@ -230,24 +258,70 @@ def create_adRequest(sponsor_id, campaign_id):
     if request.method == 'GET':
         return render_template('create_ad.html', s_name = sponsor, campaign_id = campaign_id )
     
+    campaign = Campaign.query.get(campaign_id)
+        
     if request.method == 'POST':
+        if campaign.is_falgged == True:
+            return " This campaign is flagged !! you can not create ad request for it."
+        
         niche = request.form.get("niche").strip().lower()
         requirements = request.form.get("requirements")
         payment_amt = request.form.get("payment_amt")
         status = request.form.get("status")
         end_date = request.form.get("end_date")
-        #influencer = Influencer.query.filter_by(niche = niche.lower()).first()
-        my_req = AdRequest(campaign_id=campaign_id, sponsor_id = sponsor_id, niche=niche, requirements=requirements,payment_amt=payment_amt, status=status, end_date = end_date)
-        #print(my_req)
+        request_type = campaign.visibility
+        my_req = AdRequest(campaign_id=campaign_id, sponsor_id = sponsor_id, niche=niche, requirements=requirements,payment_amt=payment_amt, status=status, end_date = end_date, request_type = request_type)
         db.session.add(my_req)
-        db.session.commit()
+        db.session.flush()
+
+        if request_type == 'public':
+            influencers = Influencer.query.all()
+            for influencer in influencers:
+                infrequest = Infrequest(influencer_id = influencer.id, ad_request_id = my_req.request_id, status = "pending", is_accepted = False)
+
+            db.session.add(infrequest)
+            db.session.commit()
+
+        elif request_type == 'private':
+            influencers = Influencer.query.filter(Influencer.niche == my_req.niche).all()
+            for influencer in influencers:
+                infrequest = Infrequest(influencer_id = influencer.id, ad_request_id = my_req.request_id, status = "pending", is_accepted = False)
+
+            db.session.add(infrequest)
+            db.session.commit()
+
         return redirect(f'/sponsor/{sponsor.id}')
+
+# allow sponsor to edit an ad request
+@app.route('/sponsor/<int:sponsor_id>/edit/ad_request/<int:request_id>', methods=['GET', 'POST'])
+def edit_ad_request(sponsor_id, request_id):
+    sponsor = Sponsor.query.get(sponsor_id)    
+    ad_request = AdRequest.query.get(request_id)
+    
+    if ad_request.sponsor_id != sponsor_id:
+        return " You can not edit this request "
+
+    if request.method == 'POST':
+        ad_request.niche = request.form.get("niche")
+        ad_request.requirements = request.form.get("requirements")
+        ad_request.payment_amt = request.form.get("payment_amt")
+        ad_request.status = request.form.get("status")
+        ad_request.end_date = request.form.get("end_date")
+
+        db.session.commit()
+        return redirect(f'/sponsor/{sponsor_id}')
+    return render_template('edit_ad_request.html', s_name=sponsor, ad = ad_request)
+
+# allow sponsor delete an ad request
+@app.route('/sponsor/<int:sponsor_id>/delete/ad_request/<int:request_id>', methods=['POST'])
+def delete_ad_request(sponsor_id, request_id):
+    sponsor = Sponsor.query.get(sponsor_id)     
+    ad_request = AdRequest.query.filter_by(sponsor_id=sponsor_id, request_id = request_id).first()
+    db.session.delete(ad_request)
+    db.session.commit()
+    return redirect(f'/sponsor/{sponsor.id}')
+
           
-    
-# allow sponsor to view ad requests
-
-    
-
 
 # convert a text into lower case, will use this function for searching functionalitiy
 def raw(text):
@@ -274,7 +348,7 @@ def text_search():
 
 
 
-
+#--------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 #search functionality for influencer
 @app.route('/search')
 def search():
@@ -293,41 +367,43 @@ def search():
 def influencer_dash(influencer_id):
     influencer = Influencer.query.get(influencer_id)
     if influencer:
-       public_req = AdRequest.query.join(Campaign).filter(Campaign.visibility == 'public').all()
-       pvt_req = AdRequest.query.join(Campaign).filter(Campaign.visibility == 'private', AdRequest.niche == influencer.niche).all()
+       public_req = AdRequest.query.filter(AdRequest.request_type == 'public').all()
+       pvt_req = AdRequest.query.filter(AdRequest.request_type == 'private', AdRequest.niche == influencer.niche).all()
+       #print(pvt_req)
        ad_requests = public_req + pvt_req
+       #print(ad_requests)
     else:
         ad_requests = []
 
-    return render_template("influencer_dash.html", influencer = influencer, ad_requests=ad_requests)
+    return render_template("influencer_dash.html", influencer = influencer, ad_requests = ad_requests)
 
     
 # allow influencer to reject an ad_request
 @app.route('/influencer/<int:influencer_id>/reject_ad_request/<int:request_id>', methods=['POST'])
 def reject_ad_request(influencer_id, request_id):
     if request.method == 'POST':
-        influencer = Influencer.query.get(influencer_id)
-        print(influencer)
-        if influencer:
-            ad_request = AdRequest.query.filter_by(request_id = request_id, influencer_id = influencer_id).first()
-            ad_request.status = 'rejected'
-            ad_request.is_accepted = False
-            db.session.commit()
-            return redirect(f'/influencer/{influencer_id}')
+        inf_req = Infrequest.query.filter_by(influencer_id = influencer_id, ad_request_id = request_id).first()
+        inf_req.status = 'rejected'
+        
+        ad_request = AdRequest.query.get(request_id)
+        ad_request.status = "rejected"
+        db.session.commit()
+
+        return redirect(f'/influencer/{influencer_id}')
     
 # allow influencer to accept an ad_request
 @app.route('/influencer/accept/<int:influencer_id>/ad_request/<int:request_id>', methods=['POST'])
 def accept_ad_request(influencer_id, request_id):
-    influencer = Influencer.query.get(influencer_id) #look for influencer by his id
-    if not influencer:
-        return "Influencer not found"
+    inf_req = Infrequest.query.filter_by(influencer_id = influencer_id, ad_request_id = request_id).first()
+    if not inf_req:
+        return "No ad request found"
+    inf_req.status = 'accepted'
+    inf_req.is_accepted = True
     
-    ad_request = AdRequest.query.filter_by(request_id = request_id, influencer_id = influencer_id).first() # look for ad request and influencer.
-    if not ad_request:
-        return "Ad request not found"
-    
-    ad_request.status = 'accepted'
+    ad_request = AdRequest.query.get(request_id)
+    ad_request.status = "accepted"
     ad_request.is_accepted = True
+
     db.session.commit()
     return redirect(f'/influencer/{influencer_id}')
     

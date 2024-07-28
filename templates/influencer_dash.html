@@ -58,7 +58,7 @@
         <h5>New Ad Requests</h5>
         <div class="container mt-4">
           {% if ad_requests|selectattr('status', 'equalto', 'pending')|list|length == 0 %}
-          <p style="color:lawngreen"><b><i> Ooops !! Currently no ad requests for you :(</i></b></p>
+          <p style="color:lawngreen"><b><i> Ooops !! Currently no ad requests for you </i></b></p>
           {% else %}
           <table class="table table-bordered table-striped">
             <thead>
