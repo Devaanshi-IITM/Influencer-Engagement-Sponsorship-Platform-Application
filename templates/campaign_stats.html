@@ -59,7 +59,7 @@
                       <td>{{campaign.e_date}}</td>
                       <td>{{campaign.budget}}</td>
                       <td>{{campaign.description}}</td>
-                      <td><form action='/admin/flag_campaign/<int:campaign_id>' method="POST"
+                      <td><form action='/admin/flag_campaign/{{campaign.camp_id}}' method="POST"
                         onsubmit="return confirm('Are you sure you want to flag this campaign?');">
                         <button type="submit" class="btn btn-danger">Flag</button>
                       </form></td>

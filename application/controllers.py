@@ -141,7 +141,7 @@ def fetch_camp_info():
     flagged_camps = Campaign.query.filter_by(is_flagged = True).all()
     return render_template ('campaign_stats.html', campaigns = camapign_info, flagged_campaigns = flagged_camps)
 
-#fetch camapigns info for admin
+#fetch ad request info for admin
 @app.route('/admin/ad_requests')
 def fetch_ad_info():
     ad_info = AdRequest.query.all()
@@ -154,7 +154,7 @@ def flag_influencer( influencer_id):
         influencer = Influencer.query.get(influencer_id)
         influencer.is_flagged = True
         db.session.commit()
-        return redirect('influencers_stats.html')
+        return redirect('/admin/influencer')
     
 # allow admin to flag a sponsor
 @app.route('/admin/flag_sponsor/<int:sponsor_id>', methods=['POST'])
@@ -163,7 +163,7 @@ def flag_sponsor( sponsor_id):
         sponsor = Sponsor.query.get(sponsor_id)
         sponsor.is_flagged = True
         db.session.commit()
-        return redirect('sponsor_stats.html')
+        return redirect('/admin/sponsor')
     
 # allow admin to flag a campaign
 @app.route('/admin/flag_campaign/<int:campaign_id>', methods=['POST'])
@@ -172,7 +172,7 @@ def flag_campaign( campaign_id ):
         campaign = Campaign.query.get(campaign_id)
         campaign.is_flagged = True
         db.session.commit()
-        return redirect('campaign_stats.html')
+        return redirect('/admin/campaigns')
 
 #--------------------------------------------------------------------------------------------------------------------#
 # end point for sponsor (managing camapigns etc.)
@@ -199,9 +199,8 @@ def delete_campaign(sponsor_id, campaign_id):
         return 'error - Sponsor not found'
      
     campaign = Campaign.query.filter_by(camp_id=campaign_id, sponsor_id=sponsor_id).first()
-    if not campaign:
-        return 'error - Campaign not found or does not belong to the sponsor', 
-    else: 
+    if campaign:
+        ad_req = AdRequest.query.filter_by(campaign_id = campaign_id).delete()
         db.session.delete(campaign)
         db.session.commit()
     return redirect(f'/sponsor/{sponsor.id}')
@@ -261,7 +260,7 @@ def create_adRequest(sponsor_id, campaign_id):
     campaign = Campaign.query.get(campaign_id)
         
     if request.method == 'POST':
-        if campaign.is_falgged == True:
+        if campaign.is_flagged == True:
             return " This campaign is flagged !! you can not create ad request for it."
         
         niche = request.form.get("niche").strip().lower()
