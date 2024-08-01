@@ -81,6 +81,8 @@ def sponsor_register():
             return redirect('/userlogin')
     return render_template('register_sponsor.html')
 
+
+#----------------------------------------------------------------------------------------------------------------
 # set up admin dashboard
 @app.route('/admin/<int:admin_id>', methods=['GET', 'POST'])
 def admin(admin_id):
