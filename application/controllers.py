@@ -368,14 +368,24 @@ def search():
 def influencer_dash(influencer_id):
     influencer = Influencer.query.get(influencer_id)
     if influencer:
-       public_req = AdRequest.query.filter(AdRequest.request_type == 'public').all()
-       pvt_req = AdRequest.query.filter(AdRequest.request_type == 'private', AdRequest.niche == influencer.niche).all()
-       #print(pvt_req)
-       ad_requests = public_req + pvt_req
-       #print(ad_requests)
+        # Debugging prints
+        print(f"Influencer ID: {influencer_id}")
+        
+        # Get all ad requests related to this influencer
+        infrequests = Infrequest.query.filter_by(influencer_id=influencer_id).all()
+        print(f"Infrequests: {[req.id for req in infrequests]}")
+
+        ad_requests = [infreq.ad_request for infreq in infrequests if infreq.is_accepted]
+        print(f"Ad Requests: {[req.request_id for req in ad_requests]}")
+        
+        public_req = [req for req in ad_requests if req.request_type == 'public']
+        pvt_req = [req for req in ad_requests if req.request_type == 'private' and req.niche == influencer.niche]
+        print(f"Public Requests: {[req.request_id for req in public_req]}")
+        print(f"Private Requests: {[req.request_id for req in pvt_req]}")
+        
+        ad_requests = public_req + pvt_req
     else:
         ad_requests = []
-
     return render_template("influencer_dash.html", influencer = influencer, ad_requests = ad_requests)
 
     

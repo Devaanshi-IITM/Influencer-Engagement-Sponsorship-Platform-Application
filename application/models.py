@@ -57,6 +57,7 @@ class Campaign(db.Model):
     is_flagged = db.Column(db.Boolean, default = False)
     sponsor = db.relationship('Sponsor', backref='campaign') #pseudo col
     
+
 #ad_request table
 class AdRequest(db.Model):
     __tablename__ = 'ad_request'
@@ -69,9 +70,10 @@ class AdRequest(db.Model):
     status = db.Column(db.String, default = "pending")
     end_date = db.Column(db.String, nullable = False)
     request_type = db.Column(db.String, nullable = False)
+    is_accepted = db.Column(db.Boolean,  default =  False)
     campaign = db.relationship('Campaign', backref='ad_requests')
     sponsor = db.relationship('Sponsor', backref='ad_requests')  # pseudo
-    is_accepted = db.Column(db.Boolean,  default =  False)
+    infrequests = db.relationship('Infrequest', backref='ad_request')
 
 # eatablish relation betwwen ad request and inluencer via a table
 class Infrequest(db.Model):
