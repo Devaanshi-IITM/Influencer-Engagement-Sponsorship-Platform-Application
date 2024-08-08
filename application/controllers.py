@@ -51,13 +51,12 @@ def influencer_register():
         fullName = request.form.get("fullName")
         niche = request.form.get("niche")
         platform = request.form.get("platform")
-        followers = request.form.get("followers")
-        profile_picture = request.form.get("profile_picture")
+        followers = request.form.get("followers") 
         this_user = Influencer.query.filter_by(user_name = u_name).first()
         if this_user:
             return "user already exists!"
         else:
-            new_user = Influencer(user_name = u_name, password = pwd, niche = niche, search_niche = raw(niche), full_name = fullName, platform = platform, followers = followers, role = "influencer", profile_pic = profile_picture)
+            new_user = Influencer(user_name = u_name, password = pwd, niche = niche, search_niche = raw(niche), full_name = fullName, platform = platform, followers = followers, role = "influencer")
             db.session.add(new_user)
             db.session.commit()
             return redirect('/userlogin')
@@ -254,7 +253,6 @@ def new_campaign(sponsor_id):
 # allow sponsor to create an ad_request
 @app.route('/sponsorad/<int:sponsor_id>/campaign/<int:campaign_id>', methods = ['GET','POST'])
 def create_adRequest(sponsor_id, campaign_id):
-   
     sponsor = Sponsor.query.get(sponsor_id)
     if request.method == 'GET':
         return render_template('create_ad.html', s_name = sponsor, campaign_id = campaign_id )
@@ -278,21 +276,18 @@ def create_adRequest(sponsor_id, campaign_id):
         if request_type == 'public':
             influencers = Influencer.query.all()
             for influencer in influencers:
-                infrequest = Infrequest(influencer_id = influencer.id, ad_request_id = my_req.request_id, status = "pending", is_accepted = False)
-
-            db.session.add(infrequest)
-            db.session.commit()
-
+                infrequest = Infrequest(influencer_id=influencer.id, ad_request_id=my_req.request_id, request_type="public", status="pending", is_accepted=False)
+                db.session.add(infrequest)  # add to db
         elif request_type == 'private':
             influencers = Influencer.query.filter(Influencer.niche == my_req.niche).all()
             for influencer in influencers:
-                infrequest = Infrequest(influencer_id = influencer.id, ad_request_id = my_req.request_id, status = "pending", is_accepted = False)
+                infrequest = Infrequest(influencer_id=influencer.id, ad_request_id=my_req.request_id, request_type="private", status="pending", is_accepted=False)
+                db.session.add(infrequest)  # Add to db  
 
-            db.session.add(infrequest)
-            db.session.commit()
+        db.session.commit()  # Commit once after all infrequests are added
 
         return redirect(f'/sponsor/{sponsor.id}')
-
+    
 # allow sponsor to edit an ad request
 @app.route('/sponsor/<int:sponsor_id>/edit/ad_request/<int:request_id>', methods=['GET', 'POST'])
 def edit_ad_request(sponsor_id, request_id):
@@ -301,6 +296,10 @@ def edit_ad_request(sponsor_id, request_id):
     
     if ad_request.sponsor_id != sponsor_id:
         return " You can not edit this request "
+    
+    # prevent sponsor from editing an accepted ad request
+    if ad_request.is_accepted == True:
+        return " You can not edit this request as it has been accepted by an influencer"
 
     if request.method == 'POST':
         ad_request.niche = request.form.get("niche")
@@ -308,7 +307,6 @@ def edit_ad_request(sponsor_id, request_id):
         ad_request.payment_amt = request.form.get("payment_amt")
         ad_request.status = request.form.get("status")
         ad_request.end_date = request.form.get("end_date")
-
         db.session.commit()
         return redirect(f'/sponsor/{sponsor_id}')
     return render_template('edit_ad_request.html', s_name=sponsor, ad = ad_request)
@@ -368,27 +366,25 @@ def search():
 def influencer_dash(influencer_id):
     influencer = Influencer.query.get(influencer_id)
     if influencer:
-        # Debugging prints
-        print(f"Influencer ID: {influencer_id}")
-        
-        # Get all ad requests related to this influencer
         infrequests = Infrequest.query.filter_by(influencer_id=influencer_id).all()
-        print(f"Infrequests: {[req.id for req in infrequests]}")
-
-        ad_requests = [infreq.ad_request for infreq in infrequests if infreq.is_accepted]
-        print(f"Ad Requests: {[req.request_id for req in ad_requests]}")
-        
-        public_req = [req for req in ad_requests if req.request_type == 'public']
-        pvt_req = [req for req in ad_requests if req.request_type == 'private' and req.niche == influencer.niche]
-        print(f"Public Requests: {[req.request_id for req in public_req]}")
-        print(f"Private Requests: {[req.request_id for req in pvt_req]}")
-        
-        ad_requests = public_req + pvt_req
+        ad_requests = []
+        for infreq in infrequests:
+            #print(infreq.ad_request_id)
+            ad_request = AdRequest.query.get(infreq.ad_request_id)
+            if ad_request:
+                #print(ad_request.campaign_id)  # Ensure this ID is valid
+                campaign = Campaign.query.get(ad_request.campaign_id)
+                print(campaign.camp_name)
+                ad_requests.append({
+                    'ad_request': ad_request,
+                    'campaign': campaign,
+                })
+        print(f"Ad Requests Data: {ad_requests}")  # Debugging print statement
     else:
         ad_requests = []
+
     return render_template("influencer_dash.html", influencer = influencer, ad_requests = ad_requests)
 
-    
 # allow influencer to reject an ad_request
 @app.route('/influencer/<int:influencer_id>/reject_ad_request/<int:request_id>', methods=['POST'])
 def reject_ad_request(influencer_id, request_id):

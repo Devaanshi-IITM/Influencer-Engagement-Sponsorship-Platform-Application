@@ -12,7 +12,6 @@ class Admin(db.Model):
     role = db.Column(db.String, default = "admin") 
 
 
-#Influencer table
 class Influencer(db.Model):
     __tablename__ = 'influencer'
     id = db.Column(db.Integer, primary_key = True)
@@ -24,9 +23,9 @@ class Influencer(db.Model):
     platform = db.Column(db.String, nullable = False)
     followers = db.Column(db.String)
     role = db.Column(db.String, nullable = False)
-    profile_pic  = db.Column(db.String)
     is_flagged = db.Column(db.Boolean, default = False)
-    
+    ad_requests = db.relationship('AdRequest', secondary='infrequest', backref='influencer')
+
 
 #Sponsor table
 class Sponsor(db.Model):
@@ -73,19 +72,16 @@ class AdRequest(db.Model):
     is_accepted = db.Column(db.Boolean,  default =  False)
     campaign = db.relationship('Campaign', backref='ad_requests')
     sponsor = db.relationship('Sponsor', backref='ad_requests')  # pseudo
-    infrequests = db.relationship('Infrequest', backref='ad_request')
 
-# eatablish relation betwwen ad request and inluencer via a table
+# bridge between ad requests an d influencers
 class Infrequest(db.Model):
+    __tablename__ = 'infrequest'
     id = db.Column(db.Integer, primary_key = True)
     influencer_id = db.Column(db.Integer, db.ForeignKey('influencer.id'), nullable = False)
     ad_request_id = db.Column(db.Integer, db.ForeignKey('ad_request.request_id'), nullable = True)
     status = db.Column(db.String, default = "pending")
+    request_type = db.Column(db.String)
     is_accepted = db.Column(db.Boolean,  default =  False)
-    influencer = db.relationship('Influencer', backref = 'ad_requests', lazy = True)
-    ad_requests = db.relationship('AdRequest', backref = 'influencer', lazy = True)
 
-    
-  
 
 
