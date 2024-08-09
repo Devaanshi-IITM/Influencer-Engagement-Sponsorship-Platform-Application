@@ -19,7 +19,8 @@ def user_login():
         admin = Admin.query.filter_by(user_name = u_name).first()
         if influencer and influencer.password == pwd:
             if influencer.is_flagged == True:
-                return "Login denied, you have been flagged by the organization !!" 
+                return "Login denied, you have been flagged by the organization !!"               
+            
             return redirect(f'/influencer/{influencer.id}')
         
         elif sponsor and sponsor.password == pwd:
@@ -172,6 +173,7 @@ def flag_campaign( campaign_id ):
     if request.method == 'POST':
         campaign = Campaign.query.get(campaign_id)
         campaign.is_flagged = True
+        AdRequest.query.filter_by(campaign_id = campaign_id).delete() 
         db.session.commit()
         return redirect('/admin/campaigns')
 
@@ -201,7 +203,12 @@ def delete_campaign(sponsor_id, campaign_id):
      
     campaign = Campaign.query.filter_by(camp_id=campaign_id, sponsor_id=sponsor_id).first()
     if campaign:
-        ad_req = AdRequest.query.filter_by(campaign_id = campaign_id).delete()
+        all_requests_ids = [ad_request.request_id for ad_request in campaign.ad_requests]
+
+        # Delete associated InfRequest entries
+        Infrequest.query.filter(Infrequest.ad_request_id.in_(all_requests_ids)).delete(synchronize_session='fetch')
+
+        AdRequest.query.filter_by(campaign_id = campaign_id).delete(synchronize_session='fetch')    
         db.session.delete(campaign)
         db.session.commit()
     return redirect(f'/sponsor/{sponsor.id}')
@@ -214,8 +221,8 @@ def edit_campaign(sponsor_id, campaign_id):
         return "Sponsor not found"
 
     campaign = Campaign.query.get(campaign_id)
-    if not campaign:
-        return "No campaign found"
+    if campaign.is_flagged == True:
+        return " Can not edit this campaign, it has been flagged by the admin !!"
 
     if request.method == 'POST':
         campaign.camp_name = request.form.get("camp_name")
@@ -254,21 +261,22 @@ def new_campaign(sponsor_id):
 @app.route('/sponsorad/<int:sponsor_id>/campaign/<int:campaign_id>', methods = ['GET','POST'])
 def create_adRequest(sponsor_id, campaign_id):
     sponsor = Sponsor.query.get(sponsor_id)
+    campaign = Campaign.query.get(campaign_id)
+        
+    if campaign.is_flagged == True:
+        return " This campaign is flagged !! you can not create ad request for it."
+    
     if request.method == 'GET':
         return render_template('create_ad.html', s_name = sponsor, campaign_id = campaign_id )
     
-    campaign = Campaign.query.get(campaign_id)
-        
     if request.method == 'POST':
-        if campaign.is_flagged == True:
-            return " This campaign is flagged !! you can not create ad request for it."
         
         niche = request.form.get("niche").strip().lower()
         requirements = request.form.get("requirements")
         payment_amt = request.form.get("payment_amt")
         status = request.form.get("status")
         end_date = request.form.get("end_date")
-        request_type = campaign.visibility
+        request_type = request.form.get("request_type")
         my_req = AdRequest(campaign_id=campaign_id, sponsor_id = sponsor_id, niche=niche, requirements=requirements,payment_amt=payment_amt, status=status, end_date = end_date, request_type = request_type)
         db.session.add(my_req)
         db.session.flush()
@@ -343,7 +351,7 @@ def text_search():
     i_platfrom = Influencer.query.filter(Influencer.platform.like(srch_platform)).all()
     i_followers = Influencer.query.filter(Influencer.followers.like(srch_followers)).all()
     search_results = i_niche + i_name + i_platfrom + i_followers
-    return render_template('sponsor_srch_result.html', search_results = search_results )
+    return render_template('sponsor_srch_result.html', search_results = search_results) 
 
 
 
@@ -357,7 +365,7 @@ def search():
     srch_cat =  Campaign.query.filter(Campaign.search_category.like(srch_word)).all() # can also use ilike instead of like to make search case insensitive
     srch_type = Campaign.query.filter(Campaign.visibility.like(srch_type), Campaign.visibility == 'public').all()
     search_results = srch_cat + srch_type
-    return render_template('campaign_srch.html', search_results = search_results )
+    return render_template('campaign_srch.html', search_results = search_results, influencer_id = influencer_id )
     
     
 
@@ -367,23 +375,32 @@ def influencer_dash(influencer_id):
     influencer = Influencer.query.get(influencer_id)
     if influencer:
         infrequests = Infrequest.query.filter_by(influencer_id=influencer_id).all()
-        ad_requests = []
+        
+        pending_requests = []
+        accepted_requests = []
+        
         for infreq in infrequests:
-            #print(infreq.ad_request_id)
             ad_request = AdRequest.query.get(infreq.ad_request_id)
             if ad_request:
-                #print(ad_request.campaign_id)  # Ensure this ID is valid
                 campaign = Campaign.query.get(ad_request.campaign_id)
-                print(campaign.camp_name)
-                ad_requests.append({
+                req_data = {
                     'ad_request': ad_request,
                     'campaign': campaign,
-                })
-        print(f"Ad Requests Data: {ad_requests}")  # Debugging print statement
-    else:
-        ad_requests = []
+                }
+                if infreq.status == 'pending':
+                    pending_requests.append(req_data)
+                elif infreq.status == 'accepted':
+                    accepted_requests.append(req_data)
 
-    return render_template("influencer_dash.html", influencer = influencer, ad_requests = ad_requests)
+        print(f"Pending Ad Requests Data: {pending_requests}")  # Debugging print statement
+        print(f"Accepted Ad Requests Data: {accepted_requests}")  # Debugging print statement
+    else:
+        pending_requests = []
+        accepted_requests = []
+
+    return render_template(
+        "influencer_dash.html",
+        influencer=influencer, pending_requests = pending_requests, accepted_requests = accepted_requests)
 
 # allow influencer to reject an ad_request
 @app.route('/influencer/<int:influencer_id>/reject_ad_request/<int:request_id>', methods=['POST'])

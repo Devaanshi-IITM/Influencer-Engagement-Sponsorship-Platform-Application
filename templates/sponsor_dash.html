@@ -11,9 +11,7 @@
 </head>
 
 <body>
-    <div id="main">
-        <div id="canvas">
-            <div id="dashboard-body">
+    <div class="container" style="background-color: aquamarine;">
                 <!-- nav bar for Sponsor dashboard -->
                 <nav class="navbar navbar-expand-lg navbar-light bg-light">
                     <div class="container-fluid">
@@ -50,7 +48,7 @@
                         {% if campaigns %}
                         {% for campaign in campaigns %}
                         <div class="col" style="margin-bottom: 40px;">
-                            <div class="card" style="width: 18rem; border-radius: 5%;">
+                            <div class="card shadow" style="width: 18rem; border-radius: 5%;">
                                 <div class="card-body">
                                     <h5 class="card-title">{{campaign.camp_name }}</h5>
                                     <p class="card-text">Category: {{ campaign.category }}</p>
@@ -103,12 +101,12 @@
                         {% if ads %}
                         {% for ad in ads %}
                         <div class="col" style="margin-bottom: 40px;">
-                            <div class="card" style="width: 18rem; border-radius: 5%;">
+                            <div class="card shadow" style="width: 18rem; border-radius: 5%;">
                                 <div class="card-body">
                                     <h5 class="card-title">Ad Request {{ad.request_id }}</h5>
                                     <p class="card-text">Campaign : {{ ad.campaign_name }}</p>
                                     <p class="card-text">Niche : {{ad.niche}}</p>
-                                    <p class="card-text">Status : {{ad.status}}</p>
+                                    <p class="card-text">Request_type : {{ad.request_type}}</p>
                                     <p class="card-text">Requirements : {{ad.requirements}}</p>
                                     <p class="card-text">Payment_amt (INR) : {{ad.payment_amt}}</p>
                                     <div id="button-container">
@@ -134,8 +132,6 @@
                     </div>
                 </div><br><br>
 
-            </div>
-        </div>
     </div>
 
 </body>

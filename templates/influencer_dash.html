@@ -10,11 +10,10 @@
 </head>
 
 <body>
-  <div id="main">
-    <div id="canvas">
-      <div id="dashboard-body">
+  <div class="container" >
+    
         <!-- Nav bar for influencer dashboard -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light " >
           <div class="container-fluid">
             <label style="margin-right: 15px;">Welcome {{ influencer.user_name }}</label>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -42,7 +41,7 @@
 
         <!-- Profile -->
         <div style="display: flex; align-items: center;">
-          <div style="width: 200px; height: 200px; background-color: #3bc8d5; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+          <div style="width: 200px; height: 200px; background-color: #e34b92; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
             <i class="bi bi-person-circle" style="font-size: 4rem;"></i>
           </div>
           <div style="margin-left: 20px;">
@@ -55,9 +54,9 @@
         <br>
 
         <!-- New Ad Requests -->
-        <h5>New Ad Requests</h5>
+        <h5 style="margin-left: 10px;">New Ad Requests</h5>
         <div class="container mt-4">
-          {% if ad_requests %}
+          {% if pending_requests %}
             <table class="table table-bordered table-striped">
               <thead>
                 <tr style="text-align: center;">
@@ -66,23 +65,20 @@
                   <th scope="col">Category</th>
                   <th scope="col">Requirements</th>
                   <th scope="col">Payment Amount</th>
-                  <th scope="col">Status</th>
                   <th scope="col">End Date</th>
                   <th scope="col">Action</th>
                 </tr>
               </thead>
               <tbody style="text-align: center;">
-                {% for ad in ad_requests %}
-                {% if ad.ad_request.status == 'pending' %}
+                {% for ad in pending_requests %}
                 <tr>
                   <th scope="row">{{ loop.index }}</th>
                   <!-- Debug output to see available keys -->
-                  <td>{{ ad.campaign.camp_name if ad.campaign else 'No Campaign' }}</td>
-                  <td>{{ ad.campaign.category if ad.campaign else 'No Category' }}</td>
-                  <td>{{ ad.ad_request.requirements if ad.ad_request else 'No Requirements' }}</td>
-                  <td>{{ ad.ad_request.payment_amt if ad.ad_request else 'No Amount' }}</td>
-                  <td>{{ ad.ad_request.status if ad.ad_request else 'No Status' }}</td>
-                  <td>{{ ad.ad_request.end_date if ad.ad_request else 'No End Date' }}</td>
+                  <td>{{ ad.campaign.camp_name  }}</td>
+                  <td>{{ ad.campaign.category }}</td>
+                  <td>{{ ad.ad_request.requirements }}</td>
+                  <td>{{ ad.ad_request.payment_amt }}</td>
+                  <td>{{ ad.ad_request.end_date  }}</td>
                   <td>
                     <div id="button-container">
                       <form action='/influencer/accept/{{ influencer.id }}/ad_request/{{ ad.ad_request.request_id }}' method="post">
@@ -96,19 +92,18 @@
                     </div>
                   </td>
                 </tr>
-                {% endif %}
                 {% endfor %}
               </tbody>
             </table>
           {% else %}
-            <p>No ad requests available.</p>
+            <p style="color: deeppink;"><b>No new ad requests available.</b></p>
           {% endif %}
-        </div>
+        </div><br>
 
         <!-- Influencer's current or active campaigns -->
-        <h5>My Engagements</h5>
+        <h5 style="margin-left: 10px;">My Engagements</h5>
         <div class="container mt-4">
-          {% if ad_requests %}
+          {% if accepted_requests %}
             <table class="table table-bordered table-striped">
               <thead>
                 <tr style="text-align: center;">
@@ -120,26 +115,23 @@
                 </tr>
               </thead>
               <tbody style="text-align: center;">
-                {% for ad in ad_requests %}
-                {% if ad.ad_request.status == 'accepted' %}
+                {% for ad in accepted_requests %}
                 <tr>
                   <th scope="row">{{ loop.index }}</th>
-                  <td>{{ ad.campaign.camp_name if ad.campaign else 'No Campaign' }}</td>
+                  <td>{{ ad.campaign.camp_name }}</td>
                   <td>Active</td>
-                  <td>{{ ad.ad_request.status if ad.ad_request else 'No Status' }}</td>
-                  <td>{{ ad.ad_request.payment_amt if ad.ad_request else 'No Amount' }}</td>
+                  <td>{{ ad.ad_request.status }}</td>
+                  <td>{{ ad.ad_request.payment_amt }}</td>
                 </tr>
-                {%endif%}
                 {% endfor %}
               </tbody>
             </table>
           {% else %}
-            <p>No engagements available.</p>
+            <p style="color: blueviolet;"><b>You don't have any ongoing activity :(</b></p>
           {% endif %}
         </div>
 
-      </div>
-    </div>
+     
   </div>
   
 </body>

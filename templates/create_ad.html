@@ -10,13 +10,14 @@
 
 </head>
 
-<body>
-    <div id="main">
-        <div id="canvas">
-            <div id="campaign-section">
+<body style="background-color: aquamarine;">
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="card shadow-lg p-4 border rounde-8" style="width: 100%; max-width: 350px;">
+            <div class="card-body">
+                <div class="card-text">
                 <form action="/sponsorad/{{ s_name.id }}/campaign/{{campaign_id}}" method="post"> <!-- form action-->
 
-                    <h2 style="text-align: center;">My Ad Request</h2> <br>
+                    <h2 style="text-align: center;">New Ad Request</h2> <br>
 
                     <div class="form-group">
                         <label for="niche">Niche</label>
@@ -35,8 +36,8 @@
                     </div><br>
 
                     <div class="form-group">
-                        <label for="status">Status</label>
-                        <input type="text" class="form-control" id="status" name="status" required>
+                        <label for="status">Request_type</label>
+                        <input type="text" class="form-control" id="status" name="request_type" required>
                     </div><br>
 
                     <div class="form-group">
@@ -49,9 +50,7 @@
                         <input type="submit" class="btn btn-primary mb-3" value="Submit">
                     </div>
                 </form>
-
-
-
+            </div>
 
             </div>
         </div>

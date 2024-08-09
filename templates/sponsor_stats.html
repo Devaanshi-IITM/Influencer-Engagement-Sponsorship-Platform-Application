@@ -8,89 +8,87 @@
 
 </head>
 <body>
-    <div id = "main">
-        <div id = "canvas">
-            <div id = "dashboard-body">
-                <!-- nav bar as it is -->
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <div class="container-fluid">
-                  <a class="navbar-brand" href="#">Confluence</a>
-                  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                  </button>
-                  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <form class="d-flex" style="margin-left: 900px;">
-                      <button class="btn btn-outline-danger" type="button" onclick="location.href='/logout'">Logout</button>
-                  </form>
-                  </div>
-                </div>
-              </nav>
-              <br>
-
-            <!-- Sponsors Summary  -->
-              <div class="container mt-4">
-                <h5>Sponsors </h5><br>
-                <table class="table" style="text-align: center;">
-                  <thead>
-                    <tr>
-                      <th scope="col">S.No.</th>
-                      <th scope="col">Sponsor_id</th>
-                      <th scope="col">Name</th>
-                      <th scope="col">Industry</th>
-                      <th scope="col">Flag Sponsor</th> 
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for sponsor in sponsors %}
-                    <tr>
-                      <th scope="row">{{loop.index}}</th>
-                      <td>{{sponsor.id}}</td>
-                      <td>{{sponsor.full_name}}</td>
-                      <td>{{sponsor.industry}}</td>
-                      <td><form action='/admin/flag_sponsor/{{sponsor.id}}' method="POST"
-                        onsubmit="return confirm('Are you sure you want to flag this sponsor?');">
-                        <button type="submit" class="btn btn-danger">Flag</button>
-                      </form></td>
-                    </tr> 
-                    {% endfor %}     
-                  </tbody>
-                </table>        
-            </div>
-                     
-            <!-- Flagged Sponsors Summary  -->
-            <div class="container mt-4">
-              <h5>Flagged Sponsors </h5><br>
-              {% if flagged_sponsors|length == 0%} 
-              <p> No flagged sponsor found !</p>
-              {% else %}
-              <table class="table" style="text-align: center;">
-                <thead>
-                  <tr>
-                    <th scope="col">S.No.</th>
-                    <th scope="col">sponsor_id</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Industry</th>
-                                        
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for sponsor in flagged_sponsors %}
-                  <tr>
-                    <th scope="row">{{loop.index}}</th>
-                    <td>{{sponsor.id}}</td>
-                    <td>{{sponsor.full_name}}</td>
-                    <td>{{sponsor.industry}}</td>
-                    
-                  </tr> 
-                  {% endfor %}     
-                </tbody>
-              </table>  
-              {% endif %}      
+  <div class="container" style="background-color: aquamarine;">
+    
+    <!-- nav bar as it is -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Confluence</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <form class="d-flex" style="margin-left: 900px;">
+              <button class="btn btn-outline-danger" type="button" onclick="location.href='/userlogin'">Logout</button>
+          </form>
           </div>
-
-            </div>
         </div>
+      </nav>
+      <br>
+
+    <!-- Sponsors Summary  -->
+      <div class="container mt-4">
+        <h5>Sponsors </h5><br>
+        <table class="table" style="text-align: center;">
+          <thead>
+            <tr>
+              <th scope="col">S.No.</th>
+              <th scope="col">Sponsor_id</th>
+              <th scope="col">Name</th>
+              <th scope="col">Industry</th>
+              <th scope="col">Flag Sponsor</th> 
+            </tr>
+          </thead>
+          <tbody>
+            {% for sponsor in sponsors %}
+            <tr>
+              <th scope="row">{{loop.index}}</th>
+              <td>{{sponsor.id}}</td>
+              <td>{{sponsor.full_name}}</td>
+              <td>{{sponsor.industry}}</td>
+              <td><form action='/admin/flag_sponsor/{{sponsor.id}}' method="POST"
+                onsubmit="return confirm('Are you sure you want to flag this sponsor?');">
+                <button type="submit" class="btn btn-danger">Flag</button>
+              </form></td>
+            </tr> 
+            {% endfor %}     
+          </tbody>
+        </table>        
     </div>
+              
+    <!-- Flagged Sponsors Summary  -->
+    <div class="container mt-4">
+      <h5>Flagged Sponsors </h5><br>
+      {% if flagged_sponsors|length == 0%} 
+      <p> No flagged sponsor found !</p>
+      {% else %}
+      <table class="table" style="text-align: center;">
+        <thead>
+          <tr>
+            <th scope="col">S.No.</th>
+            <th scope="col">sponsor_id</th>
+            <th scope="col">Name</th>
+            <th scope="col">Industry</th>
+                                
+          </tr>
+        </thead>
+        <tbody>
+          {% for sponsor in flagged_sponsors %}
+          <tr>
+            <th scope="row">{{loop.index}}</th>
+            <td>{{sponsor.id}}</td>
+            <td>{{sponsor.full_name}}</td>
+            <td>{{sponsor.industry}}</td>
+            
+          </tr> 
+          {% endfor %}     
+        </tbody>
+      </table>  
+      {% endif %}      
+  </div>
+  </div>
+
+          
     
 </body>
 </html>
