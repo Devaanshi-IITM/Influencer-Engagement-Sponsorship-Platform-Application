@@ -1,5 +1,5 @@
 # this is for all our routes
-from flask import Flask, render_template,redirect,request
+from flask import Flask, render_template,redirect,request,url_for
 from flask import current_app as app # this refers to app.py we created, to avoid circular import.
 from .models import * #import models 
 
@@ -351,6 +351,7 @@ def text_search():
     i_platfrom = Influencer.query.filter(Influencer.platform.like(srch_platform)).all()
     i_followers = Influencer.query.filter(Influencer.followers.like(srch_followers)).all()
     search_results = i_niche + i_name + i_platfrom + i_followers
+
     return render_template('sponsor_srch_result.html', search_results = search_results) 
 
 

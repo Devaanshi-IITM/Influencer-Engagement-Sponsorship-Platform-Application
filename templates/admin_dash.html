@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <div class="container" style="background-color: aquamarine;">
+    <div class="container" style="background-color: aquamarine; height: 800px;">
 
       <!-- nav bar for Admin dashboard -->
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -42,14 +42,14 @@
             <!--Column 1 -->
             <div class="card shadow" style="width: 18rem; border-radius: 5%;">
               <div class="card-body">
-                  <h5 class="card-title" stlye="text-align:center">Influencers</h5>
-                  <p class="card-text">Active : {{ active_inf }}</p>
-                  <p class="card-text">Flagged : {{ flag_inf }}</p>
-                  <p class="card-text">Total : {{ total_inf }}</p>
+                  <h5 class="card-title">Influencers</h5>
+                  <p class="card-text" style="color:green">Active : {{ active_inf }}</p>
+                  <p class="card-text" style="color:red ;">Flagged : {{ flag_inf }}</p>
+                  <p class="card-text" style="color:blue">Total : {{ total_inf }}</p>
                   
                   <div id="button-container">
                       <button type="submit" class="btn btn"
-                      style="background-color: rgb(22, 147, 160); margin-right: 10px; color:white"
+                      style="background-color: rgb(229, 226, 71); margin-right: 10px; color:white"
                       onclick="location.href='/admin/influencer'"> View </button>
                   </div>
               </div>
@@ -60,13 +60,13 @@
             <div class="card shadow" style="width: 18rem; border-radius: 5%;">
               <div class="card-body">
                   <h5 class="card-title" stlye="text-align:center">Sponsors</h5>
-                  <p class="card-text">Active : {{ active_spon }}</p>
-                  <p class="card-text">Flagged : {{ flag_spon }}</p>
-                  <p class="card-text">Total : {{ t_sponsor }}</p>
+                  <p class="card-text" style="color: green;">Active : {{ active_spon }}</p>
+                  <p class="card-text" style="color: red;">Flagged : {{ flag_spon }}</p>
+                  <p class="card-text" style="color: blue;">Total : {{ t_sponsor }}</p>
                   
                   <div id="button-container">
                       <button type="button" class="btn btn"
-                          style="background-color: rgb(22, 147, 160); margin-right: 10px; color:white"
+                          style="background-color: rgb(229, 226, 71); margin-right: 10px; color:white"
                           onclick="location.href='/admin/sponsor'"> View </button>
                   </div>
               </div>
@@ -83,14 +83,14 @@
           <!--Column 1 -->
           <div class="card-body">
             <h5 class="card-title" stlye="text-align:center">Campaigns</h5>
-            <p class="card-text">Public : {{ public_camp }}</p>
-            <p class="card-text">Private : {{ pvt_camp }}</p>
-            <p class="card-text">Flagged : {{ f_camp }}</p>
-            <p class="card-text">Total : {{ total_camp }}</p>
+            <p class="card-text" style="color: green">Public : {{ public_camp }}</p>
+            <p class="card-text" style="color: rgb(220, 17, 203);">Private : {{ pvt_camp }}</p>
+            <p class="card-text" style="color: red;">Flagged : {{ f_camp }}</p>
+            <p class="card-text" style="color: blue">Total : {{ total_camp }}</p>
             
             <div id="button-container">
                 <button type="button" class="btn btn"
-                    style="background-color: rgb(22, 147, 160); margin-right: 10px; color:white"
+                    style="background-color: rgb(229, 226, 71); margin-right: 10px; color:white"
                     onclick="location.href='/admin/campaigns'"> View </button>
             </div>
         </div>
@@ -102,14 +102,14 @@
         <div class="col">
           <div class="card" style="width: 18rem; border-radius: 5%;">
             <div class="card-body">
-                <h5 class="card-title" stlye="text-align:center">Ad Requets</h5>
-                <p class="card-text">Pending : {{ pending_req }}</p>
-                <p class="card-text">Accepted : {{ accepted_req }}</p>
-                <p class="card-text">Rejected : {{ rejected_req }}</p>
-                <p class="card-text">Total : {{ total_req }}</p>
+                <h5 class="card-title">Ad Requets</h5>
+                <p class="card-text" style="color:rgb(220, 17, 203)">Pending : {{ pending_req }}</p>
+                <p class="card-text" style="color:green">Accepted : {{ accepted_req }}</p>
+                <p class="card-text" style="color:red">Rejected : {{ rejected_req }}</p>
+                <p class="card-text" style="color:blue">Total : {{ total_req }}</p>
                 <div id="button-container">
                     <button type="button" class="btn btn"
-                        style="background-color: rgb(22, 147, 160); margin-right: 10px; color:white"
+                        style="background-color: rgb(229, 226, 71); margin-right: 10px; color:white"
                         onclick="location.href='/admin/ad_requests'"> View </button>
                 </div>
             </div>

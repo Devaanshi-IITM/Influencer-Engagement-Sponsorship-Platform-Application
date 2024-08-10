@@ -38,7 +38,7 @@
                       <th scope="col">S.No.</th>
                       <th scope="col">request_id</th>
                       <th scope="col">Campaign</th>
-                      <th scope="col">Influencer</th>
+                      <th scope="col">Sponsor</th>
                       <th scope="col">Niche</th>
                        <th scope="col">Status</th>
                        <th scope="col">Payment_amt</th>
@@ -52,7 +52,7 @@
                       <th scope="row">{{loop.index}}</th>
                       <td>{{req.request_id}}</td>
                       <td>{{req.campaign.camp_name}}</td>
-                      <td>{{req.influencer.full_name}}</td>
+                      <td>{{req.campaign.sponsor.full_name}}</td>
                       <td>{{req.niche}}</td>
                       <td>{{req.status}}</td>
                       <td>{{req.payment_amt}}</td>
