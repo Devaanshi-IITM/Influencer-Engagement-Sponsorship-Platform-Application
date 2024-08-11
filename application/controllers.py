@@ -364,9 +364,8 @@ def search():
     srch_type = "%"+srch_word.lower()+"%"
     srch_cat =  Campaign.query.filter(Campaign.search_category.like(srch_word)).all() # can also use ilike instead of like to make search case insensitive
     srch_type = Campaign.query.filter(Campaign.visibility.like(srch_type), Campaign.visibility == 'public').all()
-    search_results = srch_cat + srch_type
+    search_results = srch_cat + srch_type 
     return render_template('campaign_srch.html', search_results = search_results)
-    
     
 
 #end point for influencer dashboard
@@ -446,7 +445,7 @@ def update_profile(influencer_id):
         influencer.full_name = request.form.get("fullName")
         influencer.platfrom = request.form.get("platfrom")
         influencer.followers = request.form.get("followers")
-        influencer.profile_pic = request.form.get("profile_picture")
+        influencer.search_niche = raw(influencer.niche)
         
         db.session.commit()
         return redirect(f'/influencer/{influencer_id}')
