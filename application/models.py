@@ -24,7 +24,7 @@ class Influencer(db.Model):
     followers = db.Column(db.String)
     role = db.Column(db.String, nullable = False)
     is_flagged = db.Column(db.Boolean, default = False)
-    ad_requests = db.relationship('AdRequest', secondary='infrequest', backref='influencer')
+    ad_requests = db.relationship('AdRequest', secondary='infrequest', backref='influencer') # pseudo column
 
 
 #Sponsor table
@@ -52,7 +52,6 @@ class Campaign(db.Model):
     budget = db.Column(db.Integer, nullable = False)
     visibility = db.Column(db.String, default = 'public') 
     description = db.Column(db.String)
-    is_completed = db.Column(db.Boolean,  default =  False) 
     is_flagged = db.Column(db.Boolean, default = False)
     sponsor = db.relationship('Sponsor', backref='campaign') #pseudo col
     
@@ -73,7 +72,7 @@ class AdRequest(db.Model):
     campaign = db.relationship('Campaign', backref='ad_requests')
     sponsor = db.relationship('Sponsor', backref='ad_requests')  # pseudo
 
-# bridge between ad requests an d influencers
+# bridge between ad requests and influencers
 class Infrequest(db.Model):
     __tablename__ = 'infrequest'
     id = db.Column(db.Integer, primary_key = True)

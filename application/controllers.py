@@ -19,8 +19,7 @@ def user_login():
         admin = Admin.query.filter_by(user_name = u_name).first()
         if influencer and influencer.password == pwd:
             if influencer.is_flagged == True:
-                return "Login denied, you have been flagged by the organization !!"               
-            
+                return "Login denied, you have been flagged by the organization !!"                
             return redirect(f'/influencer/{influencer.id}')
         
         elif sponsor and sponsor.password == pwd:
@@ -177,7 +176,9 @@ def flag_campaign( campaign_id ):
         db.session.commit()
         return redirect('/admin/campaigns')
 
-#--------------------------------------------------------------------------------------------------------------------#
+
+#  SPONSOR ROUTES
+
 # end point for sponsor (managing camapigns etc.)
 @app.route('/sponsor/<int:sponsor_id>', methods=['GET', 'POST'])
 def sponsor_dash(sponsor_id):
@@ -195,20 +196,18 @@ def sponsor_dash(sponsor_id):
 
 # allow aponsor to delete campaign
 @app.route('/sponsor/<int:sponsor_id>/campaign/<int:campaign_id>', methods=['POST'])
-def delete_campaign(sponsor_id, campaign_id):
-    
+def delete_campaign(sponsor_id, campaign_id): 
     sponsor = Sponsor.query.get(sponsor_id)
     if not sponsor:
         return 'error - Sponsor not found'
-     
+      
     campaign = Campaign.query.filter_by(camp_id=campaign_id, sponsor_id=sponsor_id).first()
     if campaign:
         all_requests_ids = [ad_request.request_id for ad_request in campaign.ad_requests]
 
         # Delete associated InfRequest entries
-        Infrequest.query.filter(Infrequest.ad_request_id.in_(all_requests_ids)).delete(synchronize_session='fetch')
-
-        AdRequest.query.filter_by(campaign_id = campaign_id).delete(synchronize_session='fetch')    
+        Infrequest.query.filter(Infrequest.ad_request_id.in_(all_requests_ids)).delete()
+        AdRequest.query.filter_by(campaign_id = campaign_id).delete()    
         db.session.delete(campaign)
         db.session.commit()
     return redirect(f'/sponsor/{sponsor.id}')
@@ -356,7 +355,7 @@ def text_search():
 
 
 
-#--------------------------------------------------------------------------------------------------------------------------------------------------------------------#
+#  INFLUENCER ROUTES
 #search functionality for influencer
 @app.route('/search')
 def search():
@@ -366,7 +365,7 @@ def search():
     srch_cat =  Campaign.query.filter(Campaign.search_category.like(srch_word)).all() # can also use ilike instead of like to make search case insensitive
     srch_type = Campaign.query.filter(Campaign.visibility.like(srch_type), Campaign.visibility == 'public').all()
     search_results = srch_cat + srch_type
-    return render_template('campaign_srch.html', search_results = search_results, influencer_id = influencer_id )
+    return render_template('campaign_srch.html', search_results = search_results)
     
     
 
@@ -433,7 +432,6 @@ def accept_ad_request(influencer_id, request_id):
     return redirect(f'/influencer/{influencer_id}')
     
     
-
 # allow influlencer to update his/her profile
 @app.route('/influencer/update/<int:influencer_id>', methods=['GET', 'POST'])
 def update_profile(influencer_id):
