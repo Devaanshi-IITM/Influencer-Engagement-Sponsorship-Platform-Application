@@ -13,18 +13,7 @@ html, body {
 *{
     margin: 0px;
 }
-#main, #canvas{
-    border: 2px solid black;
-}
-#canvas{
-    margin:auto;
-    width: 90%;
-    height: auto;
-}
-#dashboard-body{
-    margin-top: 10px;
-    padding: 10px;
-}
+
 .button-container {
     display: flex;
     gap: 10px;
@@ -58,4 +47,3 @@ html, body {
     color: white;
 
 }
-
